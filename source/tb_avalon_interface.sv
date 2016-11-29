@@ -40,7 +40,8 @@ module tb_avalon_interface ();
 	logic [15:0] tb_store_data;
 	logic [3:0] tb_output_address;
 	logic tb_waitrequest;
-	logic [1:0] response;
+	logic tb_start_calc;
+	logic [1:0] tb_response;
 
 	avalon_interface DUT(
 		.clk(tb_clk),
@@ -62,7 +63,8 @@ module tb_avalon_interface ();
 		.writeresponsevalid(tb_writeresponsevalid),
 		.store_data(tb_store_data),
 		.output_address(tb_output_address),
-		.watirequest(tb_waitrequest),
+		.waitrequest(tb_waitrequest),
+		.start_calc(tb_start_calc),
 		.response(tb_response)
 		);
 
@@ -76,7 +78,7 @@ module tb_avalon_interface ();
 		@(posedge tb_clk);
 		@(posedge tb_clk);
 	end
-	endtask
+	endtask : reset_dut
 
 	task read(input logic [10:0] addr);
 	begin
@@ -91,8 +93,8 @@ module tb_avalon_interface ();
 
 		@(posedge tb_readdatavalid);
 
-
 	end
+	endtask
 
 	task write(input logic [10:0] addr, input logic [31:0] data);
 	begin
@@ -108,6 +110,7 @@ module tb_avalon_interface ();
 		tb_writedata = 'b0;
 
 	end
+	endtask
 
 	task burst_write(input logic [10:0] addr, input logic [31:0] data[0:784]);
 	begin
@@ -116,18 +119,24 @@ module tb_avalon_interface ();
 		tb_write = 1'b1;
 		tb_read = 1'b0;
 		tb_beginbursttransfer= 1'b1;
-		tb_burstcount = 3'd784
+		tb_burstcount = 3'd784;
 		for (int i = 0; i < 784; i++) begin
-			tb_writedata = data[i]
+			tb_writedata = data[i];
 			@(negedge tb_waitrequest);
 			@(posedge tb_clk);
 
 		end
 	end
+	endtask
 
-	initial begin 
+	logic [31:0] expected_val = 8'hF0F0F0F0;
+
+	initial begin
+		tb_beginbursttransfer = 'b0;
+ 		tb_burstcount = 'b0;
+
 		reset_dut();
-		logic [31:0] expected_val = 8'hF0F0F0F0
+
 		write(3'h001,expected_val);
 		if(tb_response != 2'b00) begin
 			$error("bad write response");

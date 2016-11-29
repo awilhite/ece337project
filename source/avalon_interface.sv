@@ -31,130 +31,32 @@ module avalon_interface (
 	output logic [1:0] response
 
 );
-typedef enum logic [4:0]
-		  {idle,begin_read,read,bad_addr,begin_write,store,begin_burst_write,
-		  chk_burst, cap_val, burst_store, burst_wait, res_err } state_type;
 
-	state_type state, next_state;
-	reg next_modwait;
-	parameter MAXADDR = 3'h62C
+logic [9:0] cnt;
+logic count_ena;
+logic done_burst;
 
+avalon_controller AC(
+		.clk(clk),
+		.n_rst(n_rst),
+		.write(write),
+		.read(read),
+		.beginbursttransfer(beginbursttransfer),
+		.burstcount(burstcount),
+		.address(address),
+		.writedata(writedata),
+		.readdata(readdata),
+		.result_output(result_output),
+		.done_calc(done_calc),
+		.done_burst(done_burst),
+		.readdatavalid(readdatavalid),
+		.writeresponsevalid(writeresponsevalid),
+		.output_address(output_address),
+		.end_wait(end_wait),
+		.start_calc(start_calc),
+		.response(response)
 
-	always_ff@(posedge clk, negedge n_rst)
-	begin
-		  if(n_reset == 0)begin
-		      state <= idle;
-	  end
-		  else begin
-		      state <= next_state;
-		  end
-	end
-
-
-	always_comb
-	begin
-		next_state = state;
-		case(state)
-			idle:begin 
-				if(read == 1 && beginbursttransfer == 0) begin
-					next_state = begin_read;
-				end
-			end
-
-			begin_read:begin
-				if(address >0 && address < MAXADDR) begin
-					next_state = read;
-				end
-				else
-					next_state = bad_addr;
-			end
-
-			read:begin 
-
-			end
-
-			begin_write:begin 
-
-			end
-
-			store:begin 
-
-			end
-
-			begin_burst_write:begin 
-
-			end
-
-			chk_burst:begin 
-
-			end
-
-			cap_val:begin 
-
-			end
-
-			burst_store:begin 
-
-			end
-
-			burst_wait:begin
-
-			end
-
-			res_err:begin 
-
-			end
-
-		endcase // state
-	end
-
-	always_comb begin
-		case(state)
-			idle:begin 
-
-			end
-
-			begin_read:begin
-
-			end
-
-			read:begin 
-
-			end
-
-			begin_write:begin 
-
-			end
-
-			store:begin 
-
-			end
-
-			begin_burst_write:begin 
-
-			end
-
-			chk_burst:begin 
-
-			end
-
-			cap_val:begin 
-
-			end
-
-			burst_store:begin 
-
-			end
-
-			burst_wait:begin
-
-			end
-
-			res_err:begin 
-
-			end
-
-		endcase // state
-	end
-
+		);
+flex_counter #(10) burstcounter(clk,n_rst,burstcount,count_ena,cnt,done_burst);
+assign waitrequest = (write || read) && !end_wait;
 endmodule
