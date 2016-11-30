@@ -4,7 +4,7 @@
 // Author:      Austin Wilhite
 // Lab Section: 4
 // Version:     1.0  Initial Design Entry
-// Description: Pixel memeory with address select
+// Description: Pixel memory with address select
 
 module pixel_mem_sel
 (
