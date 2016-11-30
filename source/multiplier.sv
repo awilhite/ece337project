@@ -1,18 +1,16 @@
 // $Id: $
 // File name:   controller.sv
-// Created:     9/28/2016
+// Created:     11/28/2016
 // Author:      Austin Wilhite
 // Lab Section: 4
 // Version:     1.0  Initial Design Entry
-// Description: Module declaration for the control unit
+// Description: Module declaration for multiplier block
 
 module multiplier
 (
 	input wire clk,
 	input wire n_reset,
-	input wire dr,
-	input wire lc,
-	input wire overflow,
+	input wire row_select,
 	output reg cnt_up,
 	output reg clear,
 	output wire modwait,
@@ -23,23 +21,9 @@ module multiplier
 	output reg err
 );
 
-enum bit[2:0]
-{
-	NOP, COPY, LOAD1, LOAD2, ADD, SUB, MUL
-} opcodes;
-
-enum bit[4:0]
-{
-	reg0, reg1, reg2, reg3, reg4, reg5, 
-	reg6, reg7, reg8, reg9, reg10, reg11
-} regs;
-
 typedef enum logic[5:0] 
 {
-	idle, store, eidle, zero, inc_count,
-	sort1, sort2, sort3, sort4, 
-	mul1, mul2, mul3, mul4, add1, add2, sub1, sub2,
-	load1, wait2, load2, wait3, load3, wait4, load4
+	idle, calculate, done
 } states;
 
 states next_state;
@@ -48,13 +32,9 @@ states state;
 always_ff @(posedge clk, negedge n_reset) begin
 	if (~n_reset) begin
 		state <= idle;
-		mod <= 0;
-		//error <= 0; // remove for comb
 	end
 	else begin
 		state <= next_state;
-		mod <= next_modwait;
-		//error <= next_err; // remove for comb
 	end
 end
 

@@ -1,3 +1,17 @@
+// $Id: $
+// File name:   pixel_memory_inst.sv
+// Created:     11/29/2016
+// Author:      Austin Wilhite
+// Lab Section: 4
+// Version:     1.0  Initial Design Entry
+// Description: Pixel Memory Wrapper File
+
+module pixel_mem_sel
+(
+	input wire 
+
+)
+
 pixel_memory	pixel_memory_inst (
 	.address_a ( address_a_sig ),
 	.address_b ( address_b_sig ),
