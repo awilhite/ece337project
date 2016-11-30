@@ -11,17 +11,25 @@ module multiplier
 	input wire clk,
 	input wire n_reset,
 	input wire row_select,
-	output reg cnt_up,
-	output reg clear,
-	output wire modwait,
-	output reg [2:0] op,
-	output reg [3:0] src1,
-	output reg [3:0] src2,
-	output reg [3:0] dest,
-	output reg err
+	input wire begin_mult,
+	input wire [7:0] pixel_value_1,
+	input wire [7:0] pixel_value_2,
+	input wire [15:0] weight_value_1,
+	input wire [15:0] weight_value_2,
+	output wire [9:0] pixel_address_1,
+	output wire [9:0] pixel_address_2,
+	output wire [12:0] weight_address_1,
+	output wire [12:0] weight_address_2,
+	output wire done_row
 );
 
-typedef enum logic[5:0] 
+wire count_enable;
+wire rollover_flag;
+
+reg [15:0] row_result;
+reg [9:0] count;
+
+typedef enum logic[1:0] 
 {
 	idle, calculate, done
 } states;
@@ -44,84 +52,32 @@ end
 
 always_comb begin
 	next_state = state;
-	next_modwait = mod;
-	//next_err = 0;	// remove for comb
+	next_row_result = row_result;
 
 	case (state)
 		// IDLE
 
 		idle: begin
-			if (dr) begin
-				next_state = store;
-				next_modwait = 1;
+			if (begin_mult) begin
+				next_state = setup;
 			end
 		end
 
-		// LOAD COEFFICIENTS
-
-		load1: begin
-			next_modwait = 0;
-			next_state = wait2;
+		setup: begin
+			next_state = load;
 		end
 
-		wait2: begin
-			if (lc) begin
-				next_modwait = 1;
-				next_state = load2;
+		load: begin
+			if (count < 783) begin
+				next_state = mult;
 			end
-			else begin
-				next_modwait = 0;
-				next_state = wait2;
+			else
+				next_state = idle;
 			end
 		end
 
-		load2: begin
-			next_modwait = 0;
-			next_state = wait3;
-		end
-
-		wait3: begin
-			if (lc) begin
-				next_modwait = 1;
-				next_state = load3;
-			end
-			else begin
-				next_modwait = 0;
-				next_state = wait3;
-			end
-		end
-
-		load3: begin
-			next_modwait = 0;
-			next_state = wait4;
-		end
-
-		wait4: begin
-			if (lc) begin
-				next_modwait = 1;
-				next_state = load4;
-			end
-			else begin
-				next_modwait = 0;
-				next_state = wait4;
-			end
-		end
-
-		load4: begin
-			next_modwait = 0;
+		mult: begin
 			next_state = idle;
-		end
-
-		store: begin
-			if (dr) begin
-				next_state = zero;
-				next_modwait = 1;
-			end
-			else begin
-				next_state = eidle;
-				next_modwait = 0;
-				//next_err = 1;
-			end
 		end
 
 	endcase	// end cases
@@ -133,66 +89,49 @@ end
 
 always_comb begin
 
-	error = 0;
-	cnt_up = 0;
-	op = NOP;
-	dest = reg0;
-	src1 = reg0;
-	src2 = reg0;
-	clear = 0;
+	done_row = 0;
+	count_enable = 0;
 
 	case (state)
-		// IDLE
 
 		idle: begin
-		end
-
-		// ERROR IDLE
-
-		eidle: begin
-			error = 1;
-		end
-
-		// LOAD COEFFICIENTS
-
-		load1: begin
-			op = LOAD2;
-			dest = reg7;
-			clear = 1;
-		end
-
-		wait2: begin
-		end
-
-		load2: begin
-			op = LOAD2;
-			dest = reg8;
-		end
-
-		wait3: begin
 
 		end
 
-		load3: begin
-			op = LOAD2;
-			dest = reg9;
+		setup: begin
+			count_enable = 1;
+			row_result = 0;
 		end
 
-		wait4: begin
-
+		load: begin
+			pixel_address_1 = 0;
+			pixel_address_2 = 0;
+			weight_address_1 = 0;
+			weight_address_2 = 0;
 		end
 
-		load4: begin
-			op = LOAD2;
-			dest = reg10;
+		mult: begin
+			product_1 = pixel_value_1 * weight_value_1;
+			product_2 = pixel_value_2 * weight_value_2;
+
+			row_result = row_result + product_1 + product_2;
 		end
 
-		store: begin
-			op = LOAD1;
-			dest = reg5;
-		end
-
-	endcase	// end cases
+	endcase
 end
+
+flex_counter #(
+	.NUM_CNT_BITS(10)
+)
+counter
+(
+	.clk(clk), 
+	.n_rst(n_reset), 
+	.clear(begin_mult),
+	.count_enable(count_enable), 
+	.rollover_val(10'd783),
+	.count_out(count), 			// out
+	.rollover_flag(rollover_flag)
+);
 
 endmodule
