@@ -22,6 +22,9 @@ module neural_network (
 	output logic waitrequest,
 	output logic [1:0] response
 );
+
+	// DEFINE SIGNALS
+
 	logic done_calc;
 	logic [16:0] result_output;
 	logic [10:0] weight_address;
@@ -31,6 +34,19 @@ module neural_network (
 	logic [15:0] store_data;
 	logic [3:0] output_address;
 	logic start_calc;
+
+	logic [3:0] row_select;
+	logic begin_mult;
+	logic [7:0] pixel_value_1;
+	logic [7:0] pixel_value_2;
+	logic [15:0] weight_value_1;
+	logic [15:0] weight_value_2;
+	logic [9:0] pixel_address_1;
+	logic [9:0] pixel_address_2;
+	logic [12:0] weight_address_1;
+	logic [12:0] weight_address_2;
+	logic done_row;
+	logic [15:0] row_result;
 
 	avalon_interface avalon_interface_inst(
 		.clk(clk),    // Clock
@@ -58,8 +74,34 @@ module neural_network (
 		);
 
 
+	multiplier multiplier_inst
+	(
+		.clk(clk),
+		.n_rst(n_rst),
+		.row_select(row_select),
+		.begin_mult(begin_mult),
+		.pixel_value_1(pixel_value_1),
+		.pixel_value_2(pixel_value_2),
+		.weight_value_1(weight_value_1),
+		.weight_value_2(weight_value_2),
+		.pixel_address_1(pixel_address_1),
+		.pixel_address_2(pixel_address_2),
+		.weight_address_1(weight_address_1),
+		.weight_address_2(weight_address_2),
+		.done_row(done_row),
+		.row_result(row_result)
+	);
 
-
+	main_controller main_controller_inst
+	(
+		.clk(clk),
+		.n_reset(n_rst),
+		.start_calc(start_calc),
+		.done_row(done_row),
+		.res_add(res_add),
+		.begin_mult(begin_mult),
+		.done_calc(done_calc)
+	);
 
 	pixel_memory	pixel_memory_inst (
 		.address_a ( pixel_address ),
@@ -72,4 +114,6 @@ module neural_network (
 		.q_a ( q_a ),
 		.q_b ( q_b )
 		);
+
+
 endmodule

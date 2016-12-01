@@ -92,7 +92,6 @@ module tb_multiplier();
 		tb_begin_mult = 1'b1;
 		@(posedge tb_clk);
 		tb_begin_mult = 1'b0;
-		@(posedge tb_clk);
 	end
 	endtask
 
@@ -116,11 +115,13 @@ module tb_multiplier();
 		reset_dut();
 		assert_begin();
 
-		@(posedge tb_done_row);
+		//@(posedge tb_done_row);
 
 		if (tb_row_result == tb_expected_val) begin
 			$info("Result Computed Correctly");
 		end
+
+		delay_cycles(10'd400);
 
 		// Test Case 2: Expected Result 382
 
@@ -136,7 +137,7 @@ module tb_multiplier();
 		reset_dut();
 		assert_begin();
 
-		@(posedge tb_done_row);
+		//@(posedge tb_done_row);
 
 		if (tb_row_result == tb_expected_val) begin
 			$info("Result Computed Correctly");
