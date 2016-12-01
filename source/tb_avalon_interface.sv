@@ -61,7 +61,7 @@ module tb_avalon_interface ();
 		.w_enable_pixels(tb_w_enable_pixels),
 		.readdatavalid(tb_readdatavalid),
 		.writeresponsevalid(tb_writeresponsevalid),
-		.store_data(tb_store_data),
+		//.store_data(tb_store_data),
 		.output_address(tb_output_address),
 		.waitrequest(tb_waitrequest),
 		.start_calc(tb_start_calc),
@@ -114,24 +114,31 @@ module tb_avalon_interface ();
 	end
 	endtask
 
-	task burst_write(input logic [10:0] addr, input logic [31:0] data[0:784]);
+	task burst_write(input logic [10:0] addr, input logic [31:0] data[0:10]);
 	begin
 		@(posedge tb_clk);
 		tb_address = addr;
 		tb_write = 1'b1;
 		tb_read = 1'b0;
 		tb_beginbursttransfer= 1'b1;
-		tb_burstcount = 11'd784;
-		for (int i = 0; i < 784; i++) begin
+		tb_burstcount = 11'd10;
+		for (int i = 0; i < 10; i++) begin
 			tb_writedata = data[i];
 			@(negedge tb_waitrequest);
 			@(posedge tb_clk);
+			tb_beginbursttransfer = 1'b0;
+
 
 		end
+		tb_write = 1'b0;
+		tb_burstcount = 'b0;
+		tb_address = 'b0;
+
 	end
 	endtask
 
 	logic [31:0] expected_val = 32'h00000008;
+	logic [31:0]data[0:10];
 
 	initial begin
 		tb_beginbursttransfer = 'b0;
@@ -139,16 +146,20 @@ module tb_avalon_interface ();
 
 		reset_dut();
 
-		write(11'h62B,expected_val);
+		write(11'h001,expected_val);
 		if(tb_response != 2'b00) begin
-			$error("bad write response");
+			//$error("bad write response");
 		end
-		read(11'h62B);
+		read(11'h001);
 		if(tb_response == 2'b00 && tb_readdata == expected_val) begin
 			$info("Data written sucessfully");
 		end
 		else
-			$error("Error in data write");
+		//	$error("Error in data write");
+		for (int i=0;i<=10;i=i+1)
+    		data[i] = i;
+		burst_write(11'h000,data);
+
 	end 
 
 endmodule

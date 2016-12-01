@@ -6,6 +6,10 @@ source_work/*
 mapped_work/*
 work/*
 WORK/*
+db/*
+output_files/*
+simulation/*
+incremental_db/*
 reports/*.rep
 analyzed/*
 *.stran

@@ -11,7 +11,8 @@ module flex_counter
 	NUM_CNT_BITS = 4
 )
 (
-	input clk, n_rst, clear, count_enable, [(NUM_CNT_BITS - 1):0] rollover_val,
+	input logic clk, n_rst, clear, count_enable, 
+	input logic [(NUM_CNT_BITS - 1):0] rollover_val,
 	output reg [(NUM_CNT_BITS - 1):0] count_out, 
 	output reg rollover_flag
 );

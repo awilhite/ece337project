@@ -21,6 +21,7 @@ module avalon_controller (
 	output logic writeresponsevalid,
 	output logic [10:0] output_address,
 	output logic end_wait,
+	output logic count_ena,
 	output logic w_ena,
 	output logic [1:0] response
 	
@@ -70,7 +71,7 @@ typedef enum logic [4:0]
 						next_state = bad_addr;
 				end
 				if(write == 1 && beginbursttransfer == 1) begin
-					if(address > 0 && (address + burstcount) < MAXADDR) begin
+					if(address >= 0 && (address + burstcount) < MAXADDR) begin
 						next_state = chk_burst;
 					end
 					else
@@ -102,16 +103,18 @@ typedef enum logic [4:0]
 
 			chk_burst:begin 
 				if(done_burst) begin
-					next_state = idle;
+					next_state = burst_wait;
 				end
+				else
+					next_state = burst_write;
 			end
 
 			cap_val:begin 
 
 			end
 
-			burst_write:begin 
-
+			burst_write:begin
+				next_state = chk_burst;
 			end
 
 			burst_wait:begin
@@ -132,6 +135,7 @@ typedef enum logic [4:0]
 		next_address = output_address;
 		readdatavalid = 1'b0;
 		w_ena = 1'b0;
+		count_ena = 1'b0;
 		case(state)
 			idle:begin 
 
@@ -165,7 +169,7 @@ typedef enum logic [4:0]
 			end
 
 			chk_burst:begin 
-
+				next_address = address;
 			end
 
 			cap_val:begin 
@@ -173,11 +177,15 @@ typedef enum logic [4:0]
 			end
 
 			burst_write:begin 
-
+				count_ena = 1'b1; 
+				end_wait = 1'b1;
+				// next_address = address;
+				data = writedata;
+				w_ena = 1'b1;
 			end
 
 			burst_wait:begin
-
+				// clear counter and reset burst count
 			end
 
 			res_err:begin 
