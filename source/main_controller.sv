@@ -10,7 +10,7 @@ module main_controller
 (
  input wire  clk,
  input wire  n_reset,
- input wire  data_stored,
+ input wire  start_calc,
  input wire done_row,
  output reg[3:0] res_add,
  output reg begin_mult,
@@ -43,7 +43,7 @@ module main_controller
 	case(state)
 	  IDLE:
 	    begin
-	       if(data_stored == 1)
+	       if(start_calc == 1)
 		 begin
 		    nxt_state = START_CALC;
 		 end
@@ -123,7 +123,8 @@ module main_controller
 	    begin
 	       begin_mult = 1;
 	       res_add = 4'b0110;
-	       if(done_row == 1)
+
+	     if(done_row == 1)
 		 begin
 		    nxt_state = MUL8;		    
 		 end

@@ -40,15 +40,15 @@ logic [15:0] product_2;
 
 logic [9:0] pixel_addr_1;
 logic [9:0] pixel_addr_2;
-logic [12:0] weights_addr_1;
-logic [12:0] weights_addr_2;
+logic [12:0] weight_addr_1;
+logic [12:0] weight_addr_2;
 
 assign row_result = result;
 assign done_row = row_complete;
 assign pixel_address_1 = pixel_addr_1;
 assign pixel_address_2 = pixel_addr_2;
-assign weights_address_1 = weights_addr_1;
-assign weights_address_1 = weights_addr_2;
+assign weight_address_1 = weight_addr_1;
+assign weight_address_2 = weight_addr_2;
 
 // DEFINE STATES
 
@@ -76,7 +76,12 @@ end
 /////////////////////
 
 always_comb begin
+
+	// DEFINE DEFAULT VALUES
+
 	next_state = state;
+
+	// OUTPUT LOGIC CASES
 
 	case (state)
 		// IDLE
@@ -92,11 +97,18 @@ always_comb begin
 		end
 
 		load: begin
-			next_state = mult;
+			if (count < 10'd392) begin
+				// continue loading data and multiplying until row is complete
+				next_state = mult;
+			end
+			else begin
+				// row is complete
+				next_state = done;
+			end
 		end
 
 		mult: begin
-			if (count < 381) begin
+			if (count < 10'd392) begin
 				// continue loading data and multiplying until row is complete
 				next_state = load;
 			end
@@ -119,8 +131,16 @@ end
 
 always_comb begin
 
+	// DEFINE DEFAULT VALUES
+
 	row_complete = 0;
 	count_enable = 1;
+	pixel_addr_1 = PIXEL_ADDR_START;
+	pixel_addr_2 = PIXEL_ADDR_START + 1'b1;
+	weight_addr_1 = WEIGHT_ADDR_START;
+	weight_addr_2 = WEIGHT_ADDR_START + 1'b1;
+
+	// OUTPUT LOGIC CASES
 
 	case (state)
 
@@ -130,13 +150,27 @@ always_comb begin
 
 		setup: begin
 			result = 0;
+
+			pixel_addr_1 = PIXEL_ADDR_START;
+			pixel_addr_2 = PIXEL_ADDR_START + 1'b1;
+
+			weight_addr_1 = WEIGHT_ADDR_START + (row_select * 10'd784);
+			weight_addr_2 = WEIGHT_ADDR_START + (row_select * 10'd784) + 1'b1;
 		end
 
 		load: begin
-			pixel_addr_1 = PIXEL_ADDR_START + (row_select * 784) + (count * 2);
-			pixel_addr_2 = PIXEL_ADDR_START + (row_select * 784) + (count * 2 + 1);
-			weights_addr_1 = WEIGHT_ADDR_START + (row_select * 784) + (count * 2);
-			weights_addr_2 = WEIGHT_ADDR_START + (row_select * 784) + (count * 2 + 1);
+			product_1 = pixel_value_1 * weight_value_1;
+			product_2 = pixel_value_2 * weight_value_2;
+
+			result = result + product_1 + product_2;
+
+			if (count < 10'd392) begin
+				pixel_addr_1 = PIXEL_ADDR_START + (count * 2);
+				pixel_addr_2 = PIXEL_ADDR_START + (count * 2 + 1'b1);
+
+				weight_addr_1 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2);
+				weight_addr_2 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2 + 1'b1);
+			end
 		end
 
 		mult: begin
@@ -144,6 +178,14 @@ always_comb begin
 			product_2 = pixel_value_2 * weight_value_2;
 
 			result = result + product_1 + product_2;
+
+			if (count < 10'd392) begin
+				pixel_addr_1 = PIXEL_ADDR_START + (count * 2);
+				pixel_addr_2 = PIXEL_ADDR_START + (count * 2 + 1'b1);
+
+				weight_addr_1 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2);
+				weight_addr_2 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2 + 1'b1);
+			end
 		end
 
 		done: begin
@@ -164,7 +206,7 @@ counter
 	.n_rst(n_rst), 
 	.clear(begin_mult),
 	.count_enable(count_enable), 
-	.rollover_val(10'd391),
+	.rollover_val(10'd784),
 	.count_out(count), 			// out
 	.rollover_flag(rollover_flag)
 );
