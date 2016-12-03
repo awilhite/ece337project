@@ -61,7 +61,7 @@ module tb_avalon_interface ();
 		.w_enable_pixels(tb_w_enable_pixels),
 		.readdatavalid(tb_readdatavalid),
 		.writeresponsevalid(tb_writeresponsevalid),
-		//.store_data(tb_store_data),
+		.store_data(tb_store_data),
 		.output_address(tb_output_address),
 		.waitrequest(tb_waitrequest),
 		.start_calc(tb_start_calc),
@@ -127,12 +127,12 @@ module tb_avalon_interface ();
 			@(negedge tb_waitrequest);
 			@(posedge tb_clk);
 			tb_beginbursttransfer = 1'b0;
-
+			tb_burstcount = 'b0;
+			tb_address = 'b0;
 
 		end
 		tb_write = 1'b0;
-		tb_burstcount = 'b0;
-		tb_address = 'b0;
+
 
 	end
 	endtask
@@ -157,7 +157,7 @@ module tb_avalon_interface ();
 		else
 		//	$error("Error in data write");
 		for (int i=0;i<=10;i=i+1)
-    		data[i] = i;
+    		data[i] = 2*i;
 		burst_write(11'h000,data);
 
 	end 

@@ -32,9 +32,6 @@ module avalon_interface (
 
 );
 
-logic [9:0] cnt;
-logic count_ena;
-logic done_burst;
 logic w_ena, end_wait;
 logic [10:0] int_addr;
 logic [31:0] csr, next_csr;
@@ -49,17 +46,14 @@ avalon_controller AC(
 		.address(address),
 		.writedata(writedata),
 		.done_calc(done_calc),
-		.done_burst(done_burst),
 		.readdatavalid(readdatavalid),
 		.writeresponsevalid(writeresponsevalid),
 		.output_address(int_addr),
 		.end_wait(end_wait),
-		.count_ena(count_ena),
 		.w_ena(w_ena),
 		.response(response)
-
 		);
-flex_counter #(10) burstcounter(clk,n_rst,1'b0,count_ena,burstcount,cnt,done_burst);
+
 
 
 
@@ -95,13 +89,13 @@ always_comb begin
 		end
 	end
 	else begin 
-		if(int_addr + cnt < PIXEL_ADDR_MAX) begin
-			pixel_address = int_addr + cnt;
+		if(int_addr < PIXEL_ADDR_MAX) begin
+			pixel_address = int_addr;
 			w_enable_pixels = 1'b1;
 			store_data = writedata;
 		end 
-		else if(int_addr + cnt < WEIGHT_ADDR_MAX) begin
-			weight_address = int_addr - PIXEL_ADDR_MAX + cnt;
+		else if(int_addr < WEIGHT_ADDR_MAX) begin
+			weight_address = int_addr - PIXEL_ADDR_MAX;
 			w_enable_weights = 1'b1;
 			store_data = writedata;
 		end
