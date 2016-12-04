@@ -143,6 +143,8 @@ module tb_avalon_interface ();
 	initial begin
 		tb_beginbursttransfer = 'b0;
  		tb_burstcount = 'b0;
+ 		tb_done_calc = 0'b0;
+ 		tb_result_output = 'b0;
 
 		reset_dut();
 

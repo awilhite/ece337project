@@ -66,6 +66,7 @@ assign start_calc = csr[3];
 
 always_comb begin
 	next_csr = csr;
+	next_csr[4] = done_calc;
 	store_data = 'b0;
 	output_address = 'b0;
 	pixel_address = 'b0;
