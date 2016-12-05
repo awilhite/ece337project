@@ -101,6 +101,11 @@ module tb_multiplier();
 
 	initial begin
 
+		// Initial Conditions
+
+		tb_n_rst = 1;
+		tb_begin_mult = 0;
+
 		// Test Case 1: Expected Result 784
 
 		tb_pixel_value_1 = 8'h01;
@@ -115,16 +120,18 @@ module tb_multiplier();
 		reset_dut();
 		assert_begin();
 
-		//@(posedge tb_done_row);
+		delay_cycles(20);
+
+		@(posedge tb_done_row);
 
 		if (tb_row_result == tb_expected_val) begin
 			$info("Result Computed Correctly");
 		end
-
-		delay_cycles(10'd400);
+		else begin
+			$error("Result Incorrect");
+		end
 
 		// Test Case 2: Expected Result 382
-
 		tb_pixel_value_1 = 8'h01;
 		tb_pixel_value_2 = 8'h01;
 		tb_weight_value_1 = 16'h0001;
@@ -137,7 +144,9 @@ module tb_multiplier();
 		reset_dut();
 		assert_begin();
 
-		//@(posedge tb_done_row);
+		delay_cycles(20);
+
+		@(posedge tb_done_row);
 
 		if (tb_row_result == tb_expected_val) begin
 			$info("Result Computed Correctly");

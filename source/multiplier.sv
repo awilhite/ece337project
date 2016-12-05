@@ -32,7 +32,9 @@ logic count_enable;
 logic row_complete;
 logic rollover_flag;
 
+
 logic [15:0] result;
+logic [15:0] next_result;
 logic [9:0] count;
 
 logic [15:0] product_1;
@@ -52,9 +54,9 @@ assign weight_address_2 = weight_addr_2;
 
 // DEFINE STATES
 
-typedef enum logic[2:0] 
+typedef enum logic[1:0] 
 {
-	idle, setup, load, mult, done
+	idle, setup, mult, done
 } states;
 
 states next_state;
@@ -65,9 +67,11 @@ states state;
 always_ff @(posedge clk, negedge n_rst) begin
 	if (~n_rst) begin
 		state <= idle;
+		result <= 'b0;
 	end
 	else begin
 		state <= next_state;
+		result <= next_result;
 	end
 end
 
@@ -93,24 +97,13 @@ always_comb begin
 		end
 
 		setup: begin
-			next_state = load;
-		end
-
-		load: begin
-			if (count < 10'd392) begin
-				// continue loading data and multiplying until row is complete
-				next_state = mult;
-			end
-			else begin
-				// row is complete
-				next_state = done;
-			end
+			next_state = mult;
 		end
 
 		mult: begin
-			if (count < 10'd392) begin
+			if (!rollover_flag) begin
 				// continue loading data and multiplying until row is complete
-				next_state = load;
+				next_state = mult;
 			end
 			else begin
 				// row is complete
@@ -132,13 +125,13 @@ end
 always_comb begin
 
 	// DEFINE DEFAULT VALUES
-
 	row_complete = 0;
 	count_enable = 1;
 	pixel_addr_1 = PIXEL_ADDR_START;
 	pixel_addr_2 = PIXEL_ADDR_START + 1'b1;
 	weight_addr_1 = WEIGHT_ADDR_START;
 	weight_addr_2 = WEIGHT_ADDR_START + 1'b1;
+	next_result = result;
 
 	// OUTPUT LOGIC CASES
 
@@ -149,7 +142,7 @@ always_comb begin
 		end
 
 		setup: begin
-			result = 0;
+			next_result = 0;
 
 			pixel_addr_1 = PIXEL_ADDR_START;
 			pixel_addr_2 = PIXEL_ADDR_START + 1'b1;
@@ -158,28 +151,13 @@ always_comb begin
 			weight_addr_2 = WEIGHT_ADDR_START + (row_select * 10'd784) + 1'b1;
 		end
 
-		load: begin
-			product_1 = pixel_value_1 * weight_value_1;
-			product_2 = pixel_value_2 * weight_value_2;
-
-			result = result + product_1 + product_2;
-
-			if (count < 10'd392) begin
-				pixel_addr_1 = PIXEL_ADDR_START + (count * 2);
-				pixel_addr_2 = PIXEL_ADDR_START + (count * 2 + 1'b1);
-
-				weight_addr_1 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2);
-				weight_addr_2 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2 + 1'b1);
-			end
-		end
-
 		mult: begin
 			product_1 = pixel_value_1 * weight_value_1;
 			product_2 = pixel_value_2 * weight_value_2;
 
-			result = result + product_1 + product_2;
+			next_result = result + product_1 + product_2;
 
-			if (count < 10'd392) begin
+			if (!rollover_flag) begin
 				pixel_addr_1 = PIXEL_ADDR_START + (count * 2);
 				pixel_addr_2 = PIXEL_ADDR_START + (count * 2 + 1'b1);
 
@@ -206,7 +184,7 @@ counter
 	.n_rst(n_rst), 
 	.clear(begin_mult),
 	.count_enable(count_enable), 
-	.rollover_val(10'd784),
+	.rollover_val(10'd392),
 	.count_out(count), 			// out
 	.rollover_flag(rollover_flag)
 );
