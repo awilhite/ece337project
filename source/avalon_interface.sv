@@ -20,12 +20,15 @@ module avalon_interface (
 	input logic done_calc,
 	input logic overflow,
 	output logic [11:0] weight_address,
-	output logic [9:0] pixel_address,
+	output logic [9:0] pixel_address1,
+	output logic [9:0] pixel_address2,
 	output logic w_enable_weights,
 	output logic w_enable_pixels,
 	output logic readdatavalid,
 	output logic writeresponsevalid,
-	output logic [15:0] store_data,
+	output logic [31:0] weight_data,
+	output logic [15:0] pixel_data1,
+	output logic [15:0] pixel_data2,
 	output logic [3:0] output_address,
 	output logic waitrequest,
 	output logic start_calc,
@@ -39,7 +42,7 @@ logic [12:0] int_addr;
 logic [12:0] temp_addr;
 logic [31:0] control, next_control, status, next_status;
 
-
+// FSM controller portmap
 avalon_controller AC(
 		.clk(clk),
 		.n_rst(n_rst),
@@ -64,23 +67,32 @@ avalon_controller AC(
 parameter PIXEL_ADDR_MAX = 13'd195;
 parameter WEIGHT_ADDR_MAX = 13'd4115;
 parameter RESULT_ADDR_MAX = 13'd4125;
+parameter CONTROL_REG = 13'd4126;
+parameter STATUS_REG = 13'd4127;
 
+// output signal mapping
 assign waitrequest = !end_wait;
 assign start_calc = control[3];
 assign clear_data = control[0];
 
+
+// address mapping 
 always_comb begin
-	//next_status = status;
 	next_control = control;
 	temp_addr = 'b0;
-	store_data = 'b0;
+	pixel_data1 = 'b0;
+	pixel_data2 = 'b0;
+	weight_data = 'b0;
 	output_address = 'b0;
-	pixel_address = 'b0;
+	pixel_address1 = 'b0;
+	pixel_address2 = 'b0;
 	w_enable_pixels = 1'b0;
 	w_enable_weights = 1'b0;
 	weight_address = 'b0;
 	readdata = 'b0;
 	next_status = {30'b0,overflow,done_calc};
+
+	// reads
 	if(w_ena == 1'b0) begin
 		if(int_addr <= PIXEL_ADDR_MAX) begin
 			// shouldn't need to read from pixel data
@@ -93,38 +105,42 @@ always_comb begin
 			output_address = temp_addr[3:0];
 			readdata = result_output;
 		end
-		else if(int_addr == 13'd4126) begin
+		else if(int_addr == CONTROL_REG) begin
 			readdata = control;
 		end
-		else if (int_addr == 13'd4127) begin 
+		else if (int_addr == STATUS_REG) begin 
 			readdata = status;
 		end
 	end
+	// writes
 	else begin 
 		if(int_addr <= PIXEL_ADDR_MAX) begin
-			pixel_address = int_addr[9:0];
+			pixel_address1 = int_addr[9:0];
+			pixel_address2 = int_addr[9:0] + 1;
 			w_enable_pixels = 1'b1;
-			store_data = writedata;
+			pixel_data1 = writedata[15:0];
+			pixel_data2 = writedata[31:16];
 		end 
 		else if(int_addr <= WEIGHT_ADDR_MAX) begin
 			temp_addr = int_addr - PIXEL_ADDR_MAX;
 			weight_address = temp_addr[11:0];
 			w_enable_weights = 1'b1;
-			store_data = writedata;
+			weight_data = writedata;
 		end
 		else if(int_addr <= RESULT_ADDR_MAX) begin 
-			store_data = writedata;
+			// shouldn't write to result registers
 		end
-		else if(int_addr == 13'd4126) begin
+		else if(int_addr == CONTROL_REG) begin
 			next_control = writedata;
-			//next_csr = writedata;
 		end
-		else if (int_addr == 13'd4127) begin 
-			// next_status = writedata;
+		else if (int_addr == STATUS_REG) begin 
+			// shouldn't write to status register
 		end
 	end
 end
 
+
+// control and status register updates
 always_ff @(posedge clk or negedge n_rst) begin : proc_csr
 	if(~n_rst) begin
 		control <= 31'h0000;

@@ -23,6 +23,7 @@ module tb_avalon_interface ();
 		tb_clk = 1'b1;
 		#(CLK_PERIOD/2.0);
 	end
+	// testbench signals
 	logic tb_n_rst;
 	logic tb_write;
 	logic tb_read;
@@ -35,18 +36,24 @@ module tb_avalon_interface ();
 	logic tb_done_calc;
 	logic tb_overflow;
 	logic [11:0]tb_weight_address;
-	logic [9:0]tb_pixel_address;
+	logic [9:0]tb_pixel_address1;
+	logic [9:0]tb_pixel_address2;
 	logic tb_w_enable_weights;
 	logic tb_w_enable_pixels;
 	logic tb_readdatavalid;
 	logic tb_writeresponsevalid;
-	logic [15:0] tb_store_data;
+	logic [15:0] tb_pixel_data1;
+	logic [15:0] tb_pixel_data2;
+	logic [31:0] tb_weight_data;
 	logic [3:0] tb_output_address;
 	logic tb_waitrequest;
 	logic tb_start_calc;
 	logic tb_clear_data;
 	logic [1:0] tb_response;
+	logic [15:0] tmp_weights1;
+	logic [15:0] tmp_weights2;
 
+	// DUT portmap
 	avalon_interface DUT(
 		.clk(tb_clk),
 		.n_rst(tb_n_rst),
@@ -61,12 +68,15 @@ module tb_avalon_interface ();
 		.done_calc(tb_done_calc),
 		.overflow(tb_overflow),
 		.weight_address(tb_weight_address),
-		.pixel_address(tb_pixel_address),
+		.pixel_address1(tb_pixel_address1),
+		.pixel_address2(tb_pixel_address2),
 		.w_enable_weights(tb_w_enable_weights),
 		.w_enable_pixels(tb_w_enable_pixels),
 		.readdatavalid(tb_readdatavalid),
 		.writeresponsevalid(tb_writeresponsevalid),
-		.store_data(tb_store_data),
+		.pixel_data1(tb_pixel_data1),
+		.pixel_data2(tb_pixel_data2),
+		.weight_data(tb_weight_data),
 		.output_address(tb_output_address),
 		.waitrequest(tb_waitrequest),
 		.start_calc(tb_start_calc),
@@ -74,7 +84,7 @@ module tb_avalon_interface ();
 		.response(tb_response)
 		);
 
-
+	// reset
 	task reset_dut;
 	begin
 		tb_n_rst = 1'b0;
@@ -86,6 +96,7 @@ module tb_avalon_interface ();
 	end
 	endtask : reset_dut
 
+	// simple avalon read
 	task read(input logic [12:0] addr);
 	begin
 		@(posedge tb_clk);
@@ -105,6 +116,7 @@ module tb_avalon_interface ();
 	end
 	endtask
 
+	// simple avalon write
 	task write(input logic [12:0] addr, input logic [31:0] data);
 	begin
 		@(posedge tb_clk);
@@ -123,6 +135,7 @@ module tb_avalon_interface ();
 	end
 	endtask
 
+	// perform a burst write, checking the data is being written correctly
 	task burst_write(input logic [12:0] addr, input logic [31:0] data[0:195]);
 	begin
 		@(posedge tb_clk);
@@ -139,7 +152,7 @@ module tb_avalon_interface ();
 			tb_beginbursttransfer = 1'b0;
 			tb_burstcount = 'b0;
 			tb_address = 'b0;
-			if(data[i] != tb_store_data || tb_w_enable_pixels != 1'b1 || tb_pixel_address != i) begin
+			if(data[i] != {tb_pixel_data2,tb_pixel_data1} || tb_w_enable_pixels != 1'b1 || tb_pixel_address1 != i) begin
 				$error("data burst failed");
 			end
 			else
@@ -156,6 +169,8 @@ module tb_avalon_interface ();
 	logic [31:0]data[0:195];
 
 	initial begin
+
+		// set initial input signals
 		tb_beginbursttransfer = 'b0;
  		tb_burstcount = 'b0;
  		tb_done_calc = 0'b0;
@@ -166,39 +181,60 @@ module tb_avalon_interface ();
 
 		reset_dut();
 
+		// Test Write to control Register
 		write(CONTROL_REG,expected_val);
 		if(tb_response != 2'b00) begin
 			$error("bad write response");
 		end
+
+		// Read from Control Register
 		read(CONTROL_REG);
 		#(CLK_PERIOD/10)
+		// Check Data is written and read successfully
 		if(tb_response == 2'b00 && tb_readdata == expected_val) begin
 			$info("Data written sucessfully");
 		end
 		else
 			$error("Error in data write");
 
+		// Test data
 		for (int i=0;i<=195;i=i+1)
     		data[i] = 2*i;
+    	// Burst Write, checks for matching data
 		burst_write(11'h000,data);
 
+		// try to read an invalid address
 		read(13'd5000);
 		#(CLK_PERIOD/10);
 		if(tb_response != 2'b11) begin
 			$error("No address error!");
 		end
+
+		// read a result register
 		read(13'd4125);
 		#(CLK_PERIOD/10);
 		if(tb_output_address != 4'd10) begin
 			$error("Bad address output");
 		end
+		// read another result register
 		read(13'd4124);
 		#(CLK_PERIOD/10);
 		if(tb_output_address != 4'd9) begin
 			$error("Bad address output");
 		end
+
+		// simulate caclulation complete
 		tb_done_calc = 1'b1;
+		// read status register
 		read(STATUS_REG);
+		// check status set correctly
+		#(CLK_PERIOD/10);
+		if(tb_readdata != 31'd1) begin
+			$error("status not set correctly");
+		end
+		tmp_weights1 = -15539;
+		tmp_weights2 = -20;
+		tb_writedata = {tmp_weights2,tmp_weights1};
 
 	end 
 
