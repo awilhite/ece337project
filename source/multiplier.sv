@@ -13,14 +13,10 @@ module multiplier
 	input wire n_rst,
 	input wire [3:0] row_select,
 	input wire begin_mult,
-	input wire [7:0] pixel_value_1,
-	input wire [7:0] pixel_value_2,
-	input wire [15:0] weight_value_1,
-	input wire [15:0] weight_value_2,
-	output wire [9:0] pixel_address_1,
-	output wire [9:0] pixel_address_2,
-	output wire [12:0] weight_address_1,
-	output wire [12:0] weight_address_2,
+	input wire [15:0] pixel_value,
+	input wire [31:0] weight_value,
+	output wire [9:0] pixel_address,
+	output wire [11:0] weight_address,
 	output wire done_row,
 	output wire [15:0] row_result,
 	output wire overflow,
@@ -44,18 +40,14 @@ logic [9:0] count;
 logic [15:0] product_1;
 logic [15:0] product_2;
 
-logic [9:0] pixel_addr_1;
-logic [9:0] pixel_addr_2;
-logic [12:0] weight_addr_1;
-logic [12:0] weight_addr_2; 
+logic [9:0] pixel_addr;
+logic [11:0] weight_addr;
 
 assign row_result = result[15:0];
-assign overflow = result[16];
+assign overflow = (result[16:15] == 2'b01) || (result[16:15] == 2'b10);
 assign done_row = row_complete;
-assign pixel_address_1 = pixel_addr_1;
-assign pixel_address_2 = pixel_addr_2;
-assign weight_address_1 = weight_addr_1;
-assign weight_address_2 = weight_addr_2;
+assign pixel_address = pixel_addr;
+assign weight_address = weight_addr;
 
 assign w_result_ena = write_enable;
 
@@ -138,10 +130,8 @@ always_comb begin
 	// DEFINE DEFAULT VALUES
 	row_complete = 0;
 	count_enable = 1;
-	pixel_addr_1 = PIXEL_ADDR_START;
-	pixel_addr_2 = PIXEL_ADDR_START + 1'b1;
-	weight_addr_1 = WEIGHT_ADDR_START;
-	weight_addr_2 = WEIGHT_ADDR_START + 1'b1;
+	pixel_addr = PIXEL_ADDR_START;
+	weight_addr = WEIGHT_ADDR_START;
 	next_result = result;
 
 	// OUTPUT LOGIC CASES
@@ -155,25 +145,19 @@ always_comb begin
 		setup: begin
 			next_result = 0;
 
-			pixel_addr_1 = PIXEL_ADDR_START;
-			pixel_addr_2 = PIXEL_ADDR_START + 1'b1;
-
-			weight_addr_1 = WEIGHT_ADDR_START + (row_select * 10'd784);
-			weight_addr_2 = WEIGHT_ADDR_START + (row_select * 10'd784) + 1'b1;
+			pixel_addr = PIXEL_ADDR_START;
+			weight_addr = WEIGHT_ADDR_START + (row_select * 10'd392);
 		end
 
 		mult: begin
-			product_1 = pixel_value_1 * weight_value_1;
-			product_2 = pixel_value_2 * weight_value_2;
+			product_1 = pixel_value[15:8] * weight_value[31:16];
+			product_2 = pixel_value[7:0] * weight_value[15:0];
 
 			next_result = result + product_1 + product_2;
 
 			if (!rollover_flag) begin
-				pixel_addr_1 = PIXEL_ADDR_START + (count * 2);
-				pixel_addr_2 = PIXEL_ADDR_START + (count * 2 + 1'b1);
-
-				weight_addr_1 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2);
-				weight_addr_2 = WEIGHT_ADDR_START + (row_select * 10'd784) + (count * 2 + 1'b1);
+				pixel_addr = PIXEL_ADDR_START + count;
+				weight_addr = WEIGHT_ADDR_START + (row_select * 10'd392) + count;
 			end
 		end
 

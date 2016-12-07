@@ -31,18 +31,22 @@ module tb_multiplier();
 	logic tb_n_rst;
 	logic [3:0] tb_row_select;
 	logic tb_begin_mult;
-	logic [7:0] tb_pixel_value_1;
-	logic [7:0] tb_pixel_value_2;
-	logic [15:0] tb_weight_value_1;
-	logic [15:0] tb_weight_value_2;
-	logic [9:0] tb_pixel_address_1;
-	logic [9:0] tb_pixel_address_2;
-	logic [12:0] tb_weight_address_1;
-	logic [12:0] tb_weight_address_2;
+	logic [15:0] tb_pixel_value;
+	logic [31:0] tb_weight_value;
+	logic [9:0] tb_pixel_address;
+	logic [11:0] tb_weight_address;
 	logic tb_done_row;
 	logic [15:0] tb_row_result;
 	logic tb_overflow;
 	logic tb_w_result_ena;
+
+	logic [7:0] tb_pixel_value_1;
+	logic [7:0] tb_pixel_value_2;
+	logic [15:0] tb_weight_value_1;
+	logic [15:0] tb_weight_value_2;
+
+	assign tb_weight_value = {tb_weight_value_1, tb_weight_value_2};
+	assign tb_pixel_value = {tb_pixel_value_1, tb_pixel_value_2};
 
 	// ESTABLISH DUT
 
@@ -52,14 +56,10 @@ module tb_multiplier();
 		.n_rst(tb_n_rst),
 		.row_select(tb_row_select),
 		.begin_mult(tb_begin_mult),
-		.pixel_value_1(tb_pixel_value_1),
-		.pixel_value_2(tb_pixel_value_2),
-		.weight_value_1(tb_weight_value_1),
-		.weight_value_2(tb_weight_value_2),
-		.pixel_address_1(tb_pixel_address_1),
-		.pixel_address_2(tb_pixel_address_2),
-		.weight_address_1(tb_weight_address_1),
-		.weight_address_2(tb_weight_address_2),
+		.pixel_value(tb_pixel_value),
+		.weight_value(tb_weight_value),
+		.pixel_address(tb_pixel_address),
+		.weight_address(tb_weight_address),
 		.done_row(tb_done_row),
 		.row_result(tb_row_result),
 		.overflow(tb_overflow),
@@ -168,7 +168,36 @@ module tb_multiplier();
 
 		delay_cycles(10);
 
-		// Test Case 2: Expected Result 392
+		// Test Case 3: 
+		// Expected Result: 
+		// Signed Number
+
+		tb_pixel_value_1 = 8'h01;
+		tb_pixel_value_2 = 8'h01;
+		tb_weight_value_1 = 16'hFF00;
+		tb_weight_value_2 = 16'h0000;
+
+		tb_row_select = 1;
+
+		tb_expected_val = 16'd392;
+
+		reset_dut();
+		assert_begin();
+
+		delay_cycles(20);
+
+		@(posedge tb_done_row);
+
+		if (tb_row_result == tb_expected_val) begin
+			$info("Result Computed Correctly");
+		end
+		else begin
+			$error("Result Incorrect");
+		end
+
+		delay_cycles(10);
+
+		// Test Case 4: Expected Result 392
 		// Overflow condition
 
 		tb_pixel_value_1 = 8'h01;

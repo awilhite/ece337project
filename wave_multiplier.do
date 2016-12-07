@@ -13,15 +13,13 @@ add wave -noupdate -radix decimal /tb_multiplier/DUT/counter/count_out
 add wave -noupdate -radix binary /tb_multiplier/DUT/overflow
 add wave -noupdate -radix binary /tb_multiplier/DUT/w_result_ena
 add wave -noupdate -divider {Data Values}
-add wave -noupdate -radix decimal /tb_multiplier/DUT/pixel_value_1
-add wave -noupdate -radix decimal /tb_multiplier/DUT/pixel_value_2
-add wave -noupdate -radix decimal /tb_multiplier/DUT/weight_value_1
-add wave -noupdate -radix decimal /tb_multiplier/DUT/weight_value_2
+add wave -noupdate -radix decimal /tb_multiplier/tb_pixel_value_1
+add wave -noupdate -radix decimal /tb_multiplier/tb_pixel_value_2
+add wave -noupdate -radix decimal /tb_multiplier/tb_weight_value_1
+add wave -noupdate -radix decimal /tb_multiplier/tb_weight_value_2
 add wave -noupdate -divider Addresses
-add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/pixel_address_1
-add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/pixel_address_2
-add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/weight_address_1
-add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/weight_address_2
+add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/pixel_address
+add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/weight_address
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {7944454 ps} 0}
 quietly wave cursor active 1
