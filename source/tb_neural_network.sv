@@ -180,7 +180,7 @@ module tb_neural_network ();
       end
    endtask
 
-   task burst_write(input logic [10:0] addr, input logic [31:0] data[0:10]);
+   task burst_write(input logic [10:0] addr, input logic [31:0] data[0:391]);
       begin
 	 @(posedge clk);
 	 address = addr;
@@ -188,7 +188,7 @@ module tb_neural_network ();
 	 read = 1'b0;
 	 beginbursttransfer= 1'b1;
 	 burstcount = 11'd10;
-	 for (int i = 0; i < 10; i++) begin
+	 for (int i = 0; i <= 391; i++) begin
 	    writedata = data[i];
 	    @(negedge waitrequest);
 	    @(posedge clk);
@@ -203,32 +203,87 @@ module tb_neural_network ();
       end
    endtask
 
-   logic [31:0] expected_val = 32'h00000008;
-   logic [31:0] data[0:10];
+   logic [31:0] expected_val = 32'b110001000;
+   logic [31:0] image_data[0:391];
+   logic [31:0] weight_data[0:195];
+   logic [10:0] addr = 11'b0;
+   logic [10:0] addr1 = 11'b0;
+   
+   task call_avalon_interface();
+      begin
+	 //Initialize image and weight data
+	 for(int i = 0; i < 391; i = i+2)
+	   begin
+	      image_data[i] = 32'b1;
+	      image_data[i+1] = 32'b0;
+	   end
+	 
+	 for(int i = 0; i < 195; i = i+2)
+	   begin
+	      weight_data[i] = 32'b1;
+	      weight_data[i+1] = 32'b1;	
+	   end
+	 
+	 beginbursttransfer = 'b0;
+ 	 burstcount = 'b0;
+ 	 done_calc = 0'b0;
+ 	 result_output = 'b0;
 
+	 reset_dut();
+
+	 //write image and weight data to specified address
+	 for(int i = 0; i <= 391; i = i+1)
+	   begin
+	      _write_(addr,image_data[i]);
+	      addr = addr + 1;
+	   end
+	 
+	 for(int i = 0; i <= 195; i = i+1)
+	   begin
+	      _write_(11'h001,weight_data[i]);
+	      addr = addr + 1;	
+	   end
+	 
+	 if(response != 2'b00) 
+	   begin
+	    $error("bad write response");
+	   end
+
+	 //read image and weight data from specified address
+	 for(int i = 0; i <= 391; i = i+1)
+	   begin
+	      _read_(addr1);
+	      addr1 = addr1 + 1;	  
+	   end
+	 
+	 for(int i = 0; i <= 195; i = i+1)
+	   begin
+	      _read_(addr1);
+	      addr1 = addr1 + 1;	  
+	   end
+	 
+	 
+	 if(response == 2'b00 && readdata == expected_val)
+	   begin
+	    $info("Data written sucessfully");
+	   end
+
+	 else
+	   begin
+	      $error("Error in data write");
+	   end
+	 
+	 burst_write(11'h000,image_data);
+	  
+      end
+   endtask // call_avalon_interface
+  
    /////////////////////////////////////////
+
+   /// main design module calls///   
    initial
      begin
-	beginbursttransfer = 'b0;
- 	burstcount = 'b0;
- 	done_calc = 0'b0;
- 	result_output = 'b0;
-
-	reset_dut();
-
-	_write_(11'h001,expected_val);
-	if(response != 2'b00) begin
-	   //$error("bad write response");
-	end
-	_read_(11'h001);
-	if(response == 2'b00 && readdata == expected_val) begin
-	   $info("Data written sucessfully");
-	end
-	else
-	  //	$error("Error in data write");
-	  for (int i=0;i<=10;i=i+1)
-    	    data[i] = 2*i;
-	burst_write(11'h000,data);
+	call_avalon_interface();	
      end  
    
 endmodule
