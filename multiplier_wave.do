@@ -9,7 +9,8 @@ add wave -noupdate -radix decimal /tb_multiplier/DUT/row_select
 add wave -noupdate -divider {Output Values}
 add wave -noupdate -radix decimal /tb_multiplier/DUT/done_row
 add wave -noupdate -radix decimal /tb_multiplier/DUT/row_result
-add wave -noupdate /tb_multiplier/DUT/counter/count_out
+add wave -noupdate -radix decimal /tb_multiplier/DUT/counter/count_out
+add wave -noupdate -radix binary /tb_multiplier/DUT/overflow
 add wave -noupdate -divider {Data Values}
 add wave -noupdate -radix decimal /tb_multiplier/DUT/pixel_value_1
 add wave -noupdate -radix decimal /tb_multiplier/DUT/pixel_value_2
@@ -21,7 +22,7 @@ add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/pixel_address_2
 add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/weight_address_1
 add wave -noupdate -radix hexadecimal /tb_multiplier/DUT/weight_address_2
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {98573 ps} 0}
+WaveRestoreCursors {{Cursor 1} {7944454 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -37,4 +38,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {512 ns}
+WaveRestoreZoom {7902370 ps} {8025418 ps}

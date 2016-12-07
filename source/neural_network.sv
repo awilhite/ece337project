@@ -103,7 +103,7 @@ module neural_network (
 		.done_calc(done_calc)
 	);
 
-	pixel_memory	pixel_memory_inst (
+/*	pixel_memory	pixel_memory_inst (
 		.address_a ( pixel_address ),
 		.address_b ( 'b0 ),
 		.clock ( clk ),
@@ -113,7 +113,7 @@ module neural_network (
 		.wren_b ( 'b0 ),
 		.q_a ( q_a ),
 		.q_b ( q_b )
-		);
+		);*/
 
 
 endmodule
