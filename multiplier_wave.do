@@ -8,9 +8,10 @@ add wave -noupdate -radix decimal /tb_multiplier/DUT/begin_mult
 add wave -noupdate -radix decimal /tb_multiplier/DUT/row_select
 add wave -noupdate -divider {Output Values}
 add wave -noupdate -radix decimal /tb_multiplier/DUT/done_row
-add wave -noupdate -radix decimal /tb_multiplier/DUT/row_result
+add wave -noupdate -radix unsigned /tb_multiplier/DUT/row_result
 add wave -noupdate -radix decimal /tb_multiplier/DUT/counter/count_out
 add wave -noupdate -radix binary /tb_multiplier/DUT/overflow
+add wave -noupdate -radix binary /tb_multiplier/DUT/w_result_ena
 add wave -noupdate -divider {Data Values}
 add wave -noupdate -radix decimal /tb_multiplier/DUT/pixel_value_1
 add wave -noupdate -radix decimal /tb_multiplier/DUT/pixel_value_2

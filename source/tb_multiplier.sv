@@ -42,6 +42,7 @@ module tb_multiplier();
 	logic tb_done_row;
 	logic [15:0] tb_row_result;
 	logic tb_overflow;
+	logic tb_w_result_ena;
 
 	// ESTABLISH DUT
 
@@ -61,7 +62,8 @@ module tb_multiplier();
 		.weight_address_2(tb_weight_address_2),
 		.done_row(tb_done_row),
 		.row_result(tb_row_result),
-		.overflow(tb_overflow)
+		.overflow(tb_overflow),
+		.w_result_ena(tb_w_result_ena)
 	);
 
 	// TASK: reset_dut
@@ -138,7 +140,7 @@ module tb_multiplier();
 		delay_cycles(10);
 
 		// Test Case 2: 
-		// Expected Result 382
+		// Expected Result 392
 		// One of weight values set to zero
 
 		tb_pixel_value_1 = 8'h01;
@@ -166,7 +168,7 @@ module tb_multiplier();
 
 		delay_cycles(10);
 
-		// Test Case 2: Expected Result 382
+		// Test Case 2: Expected Result 392
 		// Overflow condition
 
 		tb_pixel_value_1 = 8'h01;

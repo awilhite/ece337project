@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////
 // Created by: Synopsys DC Expert(TM) in wire load mode
 // Version   : K-2015.06-SP1
-// Date      : Tue Dec  6 17:05:19 2016
+// Date      : Tue Dec  6 21:11:01 2016
 /////////////////////////////////////////////////////////////
 
 
@@ -708,7 +708,7 @@ endmodule
 module multiplier ( clk, n_rst, row_select, begin_mult, pixel_value_1, 
         pixel_value_2, weight_value_1, weight_value_2, pixel_address_1, 
         pixel_address_2, weight_address_1, weight_address_2, done_row, 
-        row_result, overflow );
+        row_result, overflow, w_result_ena );
   input [3:0] row_select;
   input [7:0] pixel_value_1;
   input [7:0] pixel_value_2;
@@ -720,32 +720,32 @@ module multiplier ( clk, n_rst, row_select, begin_mult, pixel_value_1,
   output [12:0] weight_address_2;
   output [15:0] row_result;
   input clk, n_rst, begin_mult;
-  output done_row, overflow;
-  wire   rollover_flag, count_enable, N53, N54, N55, N56, N57, N58, N59, N60,
-         N61, N62, N63, N64, N65, N66, N67, N68, N69, N70, N71, N72, N73, N74,
-         N75, N76, N77, N78, N79, N80, N81, N82, N83, N84, N85, N86, N87, N88,
-         N89, N90, N91, N92, N93, N94, N95, N96, N97, N98, N99, N100, N101,
-         N102, N103, N104, N105, N106, N107, N108, N109, N110, N111, N112,
-         N113, N114, N115, N116, N117, N118, N126, N127, N128, N129, N151,
-         N152, N153, N154, N155, N156, N157, N160, N161, N162, n135, n136,
-         n137, n138, n139, n141, n142, n143, n144, n145, n146, n147, n148,
-         n149, n150, n151, n152, n153, n154, n155, n156, n157, n158, n159,
-         n160, n161, n162, n163, n164, n165, n166, n167, n168, n169, n170,
-         n171, n172, n173, n174, n175, n176, n177, n178, n179, n180, n181,
-         n182, n183, n184, n185, n186, n187, n188, n189, n190, n191, n192,
-         n193, n194, n195, n196, n197, n198, n199, n200, n201, n202, n203,
-         n204, n205, n206, n207, n208, n209, n210, n211, n212, n213, n214,
-         n215, n216, n217, n218, n219, n220, n221, n222, n223, n224, n225,
-         n226, n227, n228, n229, n230, n231, n232, n233, n234, n235, n236,
-         n237, n238, n239, n240, n241, n242, n243, n244, n245, n246, n247,
-         n248, n249, n250, n251, n252, n253, n254, n255, n256, n257, n258,
-         n259, n260, n261, n262, n263, n264, n265, n266, n267, n268, n269,
-         n270, n271, n272, n273, n274, n275, n276, n277, n278, n279, n280,
-         n281, n282, n283, n284, n285, n286, n287, n288, n289, n290, n291,
-         n292, n293, n294, n295, n296, n297, n298, n299, n300, n301, n302,
-         n303, n304, n305, n306, n307, n308, n309, n310, n311, n312, n313,
-         n314, n315, n316, n317, n318, n319, n320, n321, n322, n323, n324,
-         n325, n326, n327, n328, n329;
+  output done_row, overflow, w_result_ena;
+  wire   rollover_flag, count_enable, N55, N56, N57, N58, N59, N60, N61, N62,
+         N63, N64, N65, N66, N67, N68, N69, N70, N71, N72, N73, N74, N75, N76,
+         N77, N78, N79, N80, N81, N82, N83, N84, N85, N86, N87, N88, N89, N90,
+         N91, N92, N93, N94, N95, N96, N97, N98, N99, N100, N101, N102, N103,
+         N104, N105, N106, N107, N108, N109, N110, N111, N112, N113, N114,
+         N115, N116, N117, N118, N119, N120, N127, N128, N129, N130, N152,
+         N153, N154, N155, N156, N157, N158, N161, N162, N163, n138, n139,
+         n140, n141, n142, n143, n145, n146, n147, n148, n149, n150, n151,
+         n152, n153, n154, n155, n156, n157, n158, n159, n160, n161, n162,
+         n163, n164, n165, n166, n167, n168, n169, n170, n171, n172, n173,
+         n174, n175, n176, n177, n178, n179, n180, n181, n182, n183, n184,
+         n185, n186, n187, n188, n189, n190, n191, n192, n193, n194, n195,
+         n196, n197, n198, n199, n200, n201, n202, n203, n204, n205, n206,
+         n207, n208, n209, n210, n211, n212, n213, n214, n215, n216, n217,
+         n218, n219, n220, n221, n222, n223, n224, n225, n226, n227, n228,
+         n229, n230, n231, n232, n233, n234, n235, n236, n237, n238, n239,
+         n240, n241, n242, n243, n244, n245, n246, n247, n248, n249, n250,
+         n251, n252, n253, n254, n255, n256, n257, n258, n259, n260, n261,
+         n262, n263, n264, n265, n266, n267, n268, n269, n270, n271, n272,
+         n273, n274, n275, n276, n277, n278, n279, n280, n281, n282, n283,
+         n284, n285, n286, n287, n288, n289, n290, n291, n292, n293, n294,
+         n295, n296, n297, n298, n299, n300, n301, n302, n303, n304, n305,
+         n306, n307, n308, n309, n310, n311, n312, n313, n314, n315, n316,
+         n317, n318, n319, n320, n321, n322, n323, n324, n325, n326, n327,
+         n328, n329, n330, n331, n332, n333, n334, n335, n336;
   wire   [1:0] state;
   wire   SYNOPSYS_UNCONNECTED__0, SYNOPSYS_UNCONNECTED__1, 
         SYNOPSYS_UNCONNECTED__2, SYNOPSYS_UNCONNECTED__3, 
@@ -771,309 +771,315 @@ module multiplier ( clk, n_rst, row_select, begin_mult, pixel_value_1,
   assign weight_address_1[1] = weight_address_2[1];
   assign pixel_address_1[1] = weight_address_2[1];
   assign pixel_address_2[1] = weight_address_2[1];
-  assign N126 = row_select[1];
-  assign N127 = row_select[2];
-  assign N128 = row_select[3];
-  assign N129 = row_select[0];
+  assign N127 = row_select[1];
+  assign N128 = row_select[2];
+  assign N129 = row_select[3];
+  assign N130 = row_select[0];
   assign weight_address_2[0] = 1'b1;
   assign pixel_address_2[0] = 1'b1;
 
-  DFFSR \state_reg[0]  ( .D(n136), .CLK(clk), .R(n_rst), .S(1'b1), .Q(state[0]) );
-  DFFSR \state_reg[1]  ( .D(n135), .CLK(clk), .R(n_rst), .S(1'b1), .Q(state[1]) );
-  DFFSR \result_reg[16]  ( .D(n313), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
-        overflow) );
-  DFFSR \result_reg[0]  ( .D(n329), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \state_reg[0]  ( .D(n140), .CLK(clk), .R(n_rst), .S(1'b1), .Q(state[0]) );
+  DFFSR \state_reg[1]  ( .D(n139), .CLK(clk), .R(n_rst), .S(1'b1), .Q(state[1]) );
+  DFFSR write_enable_reg ( .D(n138), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+        w_result_ena) );
+  DFFSR \result_reg[0]  ( .D(n336), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[0]) );
-  DFFSR \result_reg[1]  ( .D(n328), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[1]  ( .D(n335), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[1]) );
-  DFFSR \result_reg[2]  ( .D(n327), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[2]  ( .D(n334), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[2]) );
-  DFFSR \result_reg[3]  ( .D(n326), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[3]  ( .D(n333), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[3]) );
-  DFFSR \result_reg[4]  ( .D(n325), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[4]  ( .D(n332), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[4]) );
-  DFFSR \result_reg[5]  ( .D(n324), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[5]  ( .D(n331), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[5]) );
-  DFFSR \result_reg[6]  ( .D(n323), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[6]  ( .D(n330), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[6]) );
-  DFFSR \result_reg[7]  ( .D(n322), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[7]  ( .D(n329), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[7]) );
-  DFFSR \result_reg[8]  ( .D(n321), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[8]  ( .D(n328), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[8]) );
-  DFFSR \result_reg[9]  ( .D(n320), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[9]  ( .D(n327), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[9]) );
-  DFFSR \result_reg[10]  ( .D(n319), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[10]  ( .D(n326), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[10]) );
-  DFFSR \result_reg[11]  ( .D(n318), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[11]  ( .D(n325), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[11]) );
-  DFFSR \result_reg[12]  ( .D(n317), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[12]  ( .D(n324), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[12]) );
-  DFFSR \result_reg[13]  ( .D(n316), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[13]  ( .D(n323), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[13]) );
-  DFFSR \result_reg[14]  ( .D(n315), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[14]  ( .D(n322), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[14]) );
-  DFFSR \result_reg[15]  ( .D(n314), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+  DFFSR \result_reg[15]  ( .D(n321), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
         row_result[15]) );
+  DFFSR \result_reg[16]  ( .D(n320), .CLK(clk), .R(n_rst), .S(1'b1), .Q(
+        overflow) );
   flex_counter_NUM_CNT_BITS10 counter ( .clk(clk), .n_rst(n_rst), .clear(
         begin_mult), .count_enable(count_enable), .rollover_val({1'b0, 1'b1, 
-        1'b1, 1'b0, 1'b0, 1'b0, 1'b1, 1'b0, 1'b0, 1'b0}), .count_out({N157, 
-        N156, N155, N154, N153, N152, N151, N162, N161, N160}), 
+        1'b1, 1'b0, 1'b0, 1'b0, 1'b1, 1'b0, 1'b0, 1'b0}), .count_out({N158, 
+        N157, N156, N155, N154, N153, N152, N163, N162, N161}), 
         .rollover_flag(rollover_flag) );
-  multiplier_DW01_add_1 add_0_root_add_160_2 ( .A({1'b0, N84, N83, N82, N81, 
-        N80, N79, N78, N77, N76, N75, N74, N73, N72, N71, N70, N69}), .B({N101, 
-        N100, N99, N98, N97, N96, N95, N94, N93, N92, N91, N90, N89, N88, N87, 
-        N86, N85}), .CI(1'b0), .SUM({N118, N117, N116, N115, N114, N113, N112, 
-        N111, N110, N109, N108, N107, N106, N105, N104, N103, N102}) );
-  multiplier_DW01_add_2 add_1_root_add_160_2 ( .A({overflow, row_result}), .B(
-        {1'b0, N68, N67, N66, N65, N64, N63, N62, N61, N60, N59, N58, N57, N56, 
-        N55, N54, N53}), .CI(1'b0), .SUM({N101, N100, N99, N98, N97, N96, N95, 
-        N94, N93, N92, N91, N90, N89, N88, N87, N86, N85}) );
-  multiplier_DW_mult_uns_4 mult_158 ( .a(pixel_value_2), .b(weight_value_2), 
+  multiplier_DW01_add_1 add_0_root_add_169_2 ( .A({1'b0, N86, N85, N84, N83, 
+        N82, N81, N80, N79, N78, N77, N76, N75, N74, N73, N72, N71}), .B({N103, 
+        N102, N101, N100, N99, N98, N97, N96, N95, N94, N93, N92, N91, N90, 
+        N89, N88, N87}), .CI(1'b0), .SUM({N120, N119, N118, N117, N116, N115, 
+        N114, N113, N112, N111, N110, N109, N108, N107, N106, N105, N104}) );
+  multiplier_DW01_add_2 add_1_root_add_169_2 ( .A({overflow, row_result}), .B(
+        {1'b0, N70, N69, N68, N67, N66, N65, N64, N63, N62, N61, N60, N59, N58, 
+        N57, N56, N55}), .CI(1'b0), .SUM({N103, N102, N101, N100, N99, N98, 
+        N97, N96, N95, N94, N93, N92, N91, N90, N89, N88, N87}) );
+  multiplier_DW_mult_uns_4 mult_167 ( .a(pixel_value_2), .b(weight_value_2), 
         .product({SYNOPSYS_UNCONNECTED__0, SYNOPSYS_UNCONNECTED__1, 
         SYNOPSYS_UNCONNECTED__2, SYNOPSYS_UNCONNECTED__3, 
         SYNOPSYS_UNCONNECTED__4, SYNOPSYS_UNCONNECTED__5, 
-        SYNOPSYS_UNCONNECTED__6, SYNOPSYS_UNCONNECTED__7, N84, N83, N82, N81, 
-        N80, N79, N78, N77, N76, N75, N74, N73, N72, N71, N70, N69}) );
-  multiplier_DW_mult_uns_5 mult_157 ( .a(pixel_value_1), .b(weight_value_1), 
+        SYNOPSYS_UNCONNECTED__6, SYNOPSYS_UNCONNECTED__7, N86, N85, N84, N83, 
+        N82, N81, N80, N79, N78, N77, N76, N75, N74, N73, N72, N71}) );
+  multiplier_DW_mult_uns_5 mult_166 ( .a(pixel_value_1), .b(weight_value_1), 
         .product({SYNOPSYS_UNCONNECTED__8, SYNOPSYS_UNCONNECTED__9, 
         SYNOPSYS_UNCONNECTED__10, SYNOPSYS_UNCONNECTED__11, 
         SYNOPSYS_UNCONNECTED__12, SYNOPSYS_UNCONNECTED__13, 
-        SYNOPSYS_UNCONNECTED__14, SYNOPSYS_UNCONNECTED__15, N68, N67, N66, N65, 
-        N64, N63, N62, N61, N60, N59, N58, N57, N56, N55, N54, N53}) );
-  INVX2 U164 ( .A(n151), .Y(n137) );
-  OAI21X1 U165 ( .A(state[1]), .B(state[0]), .C(n310), .Y(n138) );
-  INVX2 U166 ( .A(n200), .Y(n154) );
-  INVX2 U167 ( .A(n290), .Y(n139) );
-  NAND2X1 U168 ( .A(n141), .B(n142), .Y(weight_address_2[9]) );
-  MUX2X1 U169 ( .B(n143), .A(n144), .S(n145), .Y(n142) );
-  NOR2X1 U170 ( .A(n146), .B(n147), .Y(n144) );
-  INVX1 U171 ( .A(n148), .Y(n143) );
-  AOI22X1 U172 ( .A(n149), .B(n150), .C(n151), .D(n152), .Y(n141) );
-  XOR2X1 U173 ( .A(n153), .B(n146), .Y(n150) );
-  NOR2X1 U174 ( .A(N156), .B(n154), .Y(n149) );
-  NAND2X1 U175 ( .A(n155), .B(n156), .Y(weight_address_2[8]) );
-  MUX2X1 U176 ( .B(n157), .A(n158), .S(n159), .Y(n156) );
-  NOR2X1 U177 ( .A(N129), .B(n160), .Y(n158) );
-  INVX1 U178 ( .A(n161), .Y(n157) );
-  AOI22X1 U179 ( .A(n162), .B(n163), .C(n151), .D(n164), .Y(n155) );
-  XOR2X1 U180 ( .A(n165), .B(n159), .Y(n163) );
-  NOR2X1 U181 ( .A(N155), .B(n154), .Y(n162) );
-  NAND2X1 U182 ( .A(n166), .B(n167), .Y(weight_address_2[7]) );
-  MUX2X1 U183 ( .B(n168), .A(n169), .S(n170), .Y(n167) );
-  NOR2X1 U184 ( .A(N128), .B(n171), .Y(n169) );
-  INVX1 U185 ( .A(n172), .Y(n168) );
-  AOI22X1 U186 ( .A(n173), .B(n174), .C(n151), .D(n175), .Y(n166) );
-  XOR2X1 U187 ( .A(n176), .B(n170), .Y(n174) );
-  NOR2X1 U188 ( .A(N154), .B(n154), .Y(n173) );
-  NAND2X1 U189 ( .A(n177), .B(n178), .Y(weight_address_2[6]) );
-  MUX2X1 U190 ( .B(n179), .A(n180), .S(n181), .Y(n178) );
-  NOR2X1 U191 ( .A(N127), .B(n182), .Y(n180) );
-  INVX1 U192 ( .A(n183), .Y(n179) );
-  AOI22X1 U193 ( .A(n184), .B(n185), .C(n151), .D(n186), .Y(n177) );
-  XOR2X1 U194 ( .A(n187), .B(n181), .Y(n185) );
-  NOR2X1 U195 ( .A(N153), .B(n154), .Y(n184) );
-  NAND2X1 U196 ( .A(n188), .B(n189), .Y(weight_address_2[5]) );
-  MUX2X1 U197 ( .B(n190), .A(n191), .S(n192), .Y(n189) );
-  INVX1 U198 ( .A(n193), .Y(n191) );
-  NOR2X1 U199 ( .A(N126), .B(n194), .Y(n190) );
-  AOI22X1 U200 ( .A(n195), .B(n196), .C(n151), .D(n197), .Y(n188) );
-  INVX1 U201 ( .A(N152), .Y(n196) );
-  MUX2X1 U202 ( .B(n198), .A(n199), .S(N126), .Y(n195) );
-  NAND2X1 U203 ( .A(n200), .B(n201), .Y(n199) );
-  OAI21X1 U204 ( .A(n202), .B(n137), .C(n204), .Y(weight_address_2[4]) );
-  MUX2X1 U205 ( .B(pixel_address_2[4]), .A(n205), .S(N129), .Y(n204) );
-  NOR2X1 U206 ( .A(N151), .B(n154), .Y(n205) );
-  OAI22X1 U207 ( .A(n203), .B(n206), .C(n154), .D(n207), .Y(
+        SYNOPSYS_UNCONNECTED__14, SYNOPSYS_UNCONNECTED__15, N70, N69, N68, N67, 
+        N66, N65, N64, N63, N62, N61, N60, N59, N58, N57, N56, N55}) );
+  INVX2 U168 ( .A(n204), .Y(n141) );
+  OAI21X1 U169 ( .A(state[1]), .B(state[0]), .C(n314), .Y(n142) );
+  OR2X2 U170 ( .A(n142), .B(n155), .Y(n317) );
+  BUFX2 U171 ( .A(n294), .Y(n143) );
+  NAND2X1 U172 ( .A(n145), .B(n146), .Y(weight_address_2[9]) );
+  MUX2X1 U173 ( .B(n147), .A(n148), .S(n149), .Y(n146) );
+  NOR2X1 U174 ( .A(n150), .B(n151), .Y(n148) );
+  INVX1 U175 ( .A(n152), .Y(n147) );
+  AOI22X1 U176 ( .A(n153), .B(n154), .C(n155), .D(n156), .Y(n145) );
+  XOR2X1 U177 ( .A(n157), .B(n150), .Y(n154) );
+  NOR2X1 U178 ( .A(N157), .B(n141), .Y(n153) );
+  NAND2X1 U179 ( .A(n159), .B(n160), .Y(weight_address_2[8]) );
+  MUX2X1 U180 ( .B(n161), .A(n162), .S(n163), .Y(n160) );
+  NOR2X1 U181 ( .A(N130), .B(n164), .Y(n162) );
+  INVX1 U182 ( .A(n165), .Y(n161) );
+  AOI22X1 U183 ( .A(n166), .B(n167), .C(n155), .D(n168), .Y(n159) );
+  XOR2X1 U184 ( .A(n169), .B(n163), .Y(n167) );
+  NOR2X1 U185 ( .A(N156), .B(n141), .Y(n166) );
+  NAND2X1 U186 ( .A(n170), .B(n171), .Y(weight_address_2[7]) );
+  MUX2X1 U187 ( .B(n172), .A(n173), .S(n174), .Y(n171) );
+  NOR2X1 U188 ( .A(N129), .B(n175), .Y(n173) );
+  INVX1 U189 ( .A(n176), .Y(n172) );
+  AOI22X1 U190 ( .A(n177), .B(n178), .C(n155), .D(n179), .Y(n170) );
+  XOR2X1 U191 ( .A(n180), .B(n174), .Y(n178) );
+  NOR2X1 U192 ( .A(N155), .B(n141), .Y(n177) );
+  NAND2X1 U193 ( .A(n181), .B(n182), .Y(weight_address_2[6]) );
+  MUX2X1 U194 ( .B(n183), .A(n184), .S(n185), .Y(n182) );
+  NOR2X1 U195 ( .A(N128), .B(n186), .Y(n184) );
+  INVX1 U196 ( .A(n187), .Y(n183) );
+  AOI22X1 U197 ( .A(n188), .B(n189), .C(n155), .D(n190), .Y(n181) );
+  XOR2X1 U198 ( .A(n191), .B(n185), .Y(n189) );
+  NOR2X1 U199 ( .A(N154), .B(n141), .Y(n188) );
+  NAND2X1 U200 ( .A(n192), .B(n193), .Y(weight_address_2[5]) );
+  MUX2X1 U201 ( .B(n194), .A(n195), .S(n196), .Y(n193) );
+  INVX1 U202 ( .A(n197), .Y(n195) );
+  NOR2X1 U203 ( .A(N127), .B(n198), .Y(n194) );
+  AOI22X1 U204 ( .A(n199), .B(n200), .C(n155), .D(n201), .Y(n192) );
+  INVX1 U205 ( .A(N153), .Y(n200) );
+  MUX2X1 U206 ( .B(n202), .A(n203), .S(N127), .Y(n199) );
+  NAND2X1 U207 ( .A(n204), .B(n205), .Y(n203) );
+  OAI21X1 U208 ( .A(n206), .B(n207), .C(n208), .Y(weight_address_2[4]) );
+  MUX2X1 U209 ( .B(pixel_address_2[4]), .A(n209), .S(N130), .Y(n208) );
+  NOR2X1 U210 ( .A(N152), .B(n158), .Y(n209) );
+  OAI22X1 U211 ( .A(n207), .B(n210), .C(n158), .D(n211), .Y(
         weight_address_2[12]) );
-  XNOR2X1 U208 ( .A(n208), .B(n209), .Y(n207) );
-  NAND2X1 U209 ( .A(n210), .B(n211), .Y(n208) );
-  OAI22X1 U210 ( .A(n212), .B(n203), .C(n213), .D(n154), .Y(
+  XNOR2X1 U212 ( .A(n212), .B(n213), .Y(n211) );
+  NAND2X1 U213 ( .A(n214), .B(n215), .Y(n212) );
+  OAI22X1 U214 ( .A(n207), .B(n216), .C(n217), .D(n158), .Y(
         weight_address_2[11]) );
-  XOR2X1 U211 ( .A(n211), .B(n214), .Y(n213) );
-  OAI21X1 U212 ( .A(n215), .B(n216), .C(n217), .Y(n211) );
-  OAI21X1 U213 ( .A(n218), .B(n219), .C(N157), .Y(n217) );
-  NAND2X1 U214 ( .A(n220), .B(n221), .Y(weight_address_2[10]) );
-  MUX2X1 U215 ( .B(n222), .A(n223), .S(n215), .Y(n221) );
-  INVX1 U216 ( .A(n219), .Y(n215) );
-  NOR2X1 U217 ( .A(n218), .B(n224), .Y(n223) );
-  INVX1 U218 ( .A(n225), .Y(n222) );
-  AOI22X1 U219 ( .A(n226), .B(n227), .C(n151), .D(n228), .Y(n220) );
-  INVX1 U220 ( .A(n203), .Y(n151) );
-  XOR2X1 U221 ( .A(n219), .B(n218), .Y(n227) );
-  OAI21X1 U222 ( .A(n145), .B(n229), .C(n230), .Y(n219) );
-  OAI21X1 U223 ( .A(n146), .B(n153), .C(N156), .Y(n230) );
-  INVX1 U224 ( .A(n153), .Y(n145) );
-  OAI21X1 U225 ( .A(n159), .B(n165), .C(n231), .Y(n153) );
-  OAI21X1 U226 ( .A(N129), .B(n232), .C(N155), .Y(n231) );
-  INVX1 U227 ( .A(n232), .Y(n159) );
-  OAI21X1 U228 ( .A(n170), .B(n176), .C(n233), .Y(n232) );
-  OAI21X1 U229 ( .A(N128), .B(n234), .C(N154), .Y(n233) );
-  INVX1 U230 ( .A(n234), .Y(n170) );
-  OAI21X1 U231 ( .A(n181), .B(n187), .C(n235), .Y(n234) );
-  OAI21X1 U232 ( .A(N127), .B(n236), .C(N153), .Y(n235) );
-  INVX1 U233 ( .A(n236), .Y(n181) );
-  OAI21X1 U234 ( .A(n201), .B(n237), .C(n238), .Y(n236) );
-  OAI21X1 U235 ( .A(n192), .B(N126), .C(N152), .Y(n238) );
-  NOR2X1 U236 ( .A(N157), .B(n154), .Y(n226) );
-  OAI22X1 U238 ( .A(n229), .B(n203), .C(n239), .D(n154), .Y(
+  XOR2X1 U215 ( .A(n215), .B(n218), .Y(n217) );
+  OAI21X1 U216 ( .A(n219), .B(n220), .C(n221), .Y(n215) );
+  OAI21X1 U217 ( .A(n222), .B(n223), .C(N158), .Y(n221) );
+  NAND2X1 U218 ( .A(n224), .B(n225), .Y(weight_address_2[10]) );
+  MUX2X1 U219 ( .B(n226), .A(n227), .S(n219), .Y(n225) );
+  INVX1 U220 ( .A(n223), .Y(n219) );
+  NOR2X1 U221 ( .A(n222), .B(n228), .Y(n227) );
+  INVX1 U222 ( .A(n229), .Y(n226) );
+  AOI22X1 U223 ( .A(n230), .B(n231), .C(n155), .D(n232), .Y(n224) );
+  XOR2X1 U224 ( .A(n223), .B(n222), .Y(n231) );
+  OAI21X1 U225 ( .A(n149), .B(n233), .C(n234), .Y(n223) );
+  OAI21X1 U226 ( .A(n150), .B(n157), .C(N157), .Y(n234) );
+  INVX1 U227 ( .A(n157), .Y(n149) );
+  OAI21X1 U228 ( .A(n163), .B(n169), .C(n235), .Y(n157) );
+  OAI21X1 U229 ( .A(N130), .B(n236), .C(N156), .Y(n235) );
+  INVX1 U230 ( .A(n236), .Y(n163) );
+  OAI21X1 U231 ( .A(n174), .B(n180), .C(n237), .Y(n236) );
+  OAI21X1 U232 ( .A(N129), .B(n238), .C(N155), .Y(n237) );
+  INVX1 U233 ( .A(n238), .Y(n174) );
+  OAI21X1 U234 ( .A(n185), .B(n191), .C(n239), .Y(n238) );
+  OAI21X1 U235 ( .A(N128), .B(n240), .C(N154), .Y(n239) );
+  INVX1 U236 ( .A(n240), .Y(n185) );
+  OAI21X1 U237 ( .A(n205), .B(n241), .C(n242), .Y(n240) );
+  OAI21X1 U238 ( .A(n196), .B(N127), .C(N153), .Y(n242) );
+  NOR2X1 U239 ( .A(N158), .B(n158), .Y(n230) );
+  OAI22X1 U241 ( .A(n233), .B(n207), .C(n243), .D(n158), .Y(
         weight_address_1[9]) );
-  INVX1 U239 ( .A(n152), .Y(n239) );
-  OAI21X1 U240 ( .A(n240), .B(n148), .C(n241), .Y(n152) );
-  MUX2X1 U241 ( .B(n242), .A(n243), .S(pixel_address_2[9]), .Y(n241) );
-  NOR2X1 U242 ( .A(n146), .B(n244), .Y(n243) );
-  XOR2X1 U243 ( .A(n244), .B(n146), .Y(n242) );
-  INVX1 U244 ( .A(n146), .Y(n229) );
-  OAI22X1 U245 ( .A(n165), .B(n203), .C(n245), .D(n154), .Y(
+  INVX1 U242 ( .A(n156), .Y(n243) );
+  OAI21X1 U243 ( .A(n244), .B(n152), .C(n245), .Y(n156) );
+  MUX2X1 U244 ( .B(n246), .A(n247), .S(pixel_address_2[9]), .Y(n245) );
+  NOR2X1 U245 ( .A(n150), .B(n248), .Y(n247) );
+  XOR2X1 U246 ( .A(n248), .B(n150), .Y(n246) );
+  INVX1 U247 ( .A(n150), .Y(n233) );
+  OAI22X1 U248 ( .A(n169), .B(n207), .C(n249), .D(n158), .Y(
         weight_address_1[8]) );
-  INVX1 U246 ( .A(n164), .Y(n245) );
-  OAI21X1 U247 ( .A(n246), .B(n161), .C(n247), .Y(n164) );
-  MUX2X1 U248 ( .B(n248), .A(n249), .S(N129), .Y(n247) );
-  NOR2X1 U249 ( .A(pixel_address_2[8]), .B(n250), .Y(n249) );
-  XOR2X1 U250 ( .A(n250), .B(pixel_address_2[8]), .Y(n248) );
-  OAI22X1 U251 ( .A(n176), .B(n203), .C(n251), .D(n154), .Y(
+  INVX1 U249 ( .A(n168), .Y(n249) );
+  OAI21X1 U250 ( .A(n250), .B(n165), .C(n251), .Y(n168) );
+  MUX2X1 U251 ( .B(n252), .A(n253), .S(N130), .Y(n251) );
+  NOR2X1 U252 ( .A(pixel_address_2[8]), .B(n254), .Y(n253) );
+  XOR2X1 U253 ( .A(n254), .B(pixel_address_2[8]), .Y(n252) );
+  OAI22X1 U254 ( .A(n180), .B(n207), .C(n255), .D(n158), .Y(
         weight_address_1[7]) );
-  INVX1 U252 ( .A(n175), .Y(n251) );
-  OAI21X1 U253 ( .A(n252), .B(n172), .C(n253), .Y(n175) );
-  MUX2X1 U254 ( .B(n254), .A(n255), .S(N128), .Y(n253) );
-  NOR2X1 U255 ( .A(pixel_address_2[7]), .B(n256), .Y(n255) );
-  XOR2X1 U256 ( .A(n256), .B(pixel_address_2[7]), .Y(n254) );
-  INVX1 U257 ( .A(n256), .Y(n252) );
-  INVX1 U258 ( .A(N128), .Y(n176) );
-  OAI22X1 U259 ( .A(n187), .B(n203), .C(n257), .D(n154), .Y(
+  INVX1 U255 ( .A(n179), .Y(n255) );
+  OAI21X1 U256 ( .A(n256), .B(n176), .C(n257), .Y(n179) );
+  MUX2X1 U257 ( .B(n258), .A(n259), .S(N129), .Y(n257) );
+  NOR2X1 U258 ( .A(pixel_address_2[7]), .B(n260), .Y(n259) );
+  XOR2X1 U259 ( .A(n260), .B(pixel_address_2[7]), .Y(n258) );
+  INVX1 U260 ( .A(n260), .Y(n256) );
+  INVX1 U261 ( .A(N129), .Y(n180) );
+  OAI22X1 U262 ( .A(n191), .B(n207), .C(n261), .D(n158), .Y(
         weight_address_1[6]) );
-  INVX1 U260 ( .A(n186), .Y(n257) );
-  OAI21X1 U261 ( .A(n258), .B(n183), .C(n259), .Y(n186) );
-  MUX2X1 U262 ( .B(n260), .A(n261), .S(N127), .Y(n259) );
-  NOR2X1 U263 ( .A(pixel_address_2[6]), .B(n262), .Y(n261) );
-  XOR2X1 U264 ( .A(n262), .B(pixel_address_2[6]), .Y(n260) );
-  OAI22X1 U265 ( .A(n237), .B(n203), .C(n263), .D(n154), .Y(
+  INVX1 U263 ( .A(n190), .Y(n261) );
+  OAI21X1 U264 ( .A(n262), .B(n187), .C(n263), .Y(n190) );
+  MUX2X1 U265 ( .B(n264), .A(n265), .S(N128), .Y(n263) );
+  NOR2X1 U266 ( .A(pixel_address_2[6]), .B(n266), .Y(n265) );
+  XOR2X1 U267 ( .A(n266), .B(pixel_address_2[6]), .Y(n264) );
+  OAI22X1 U268 ( .A(n241), .B(n207), .C(n267), .D(n158), .Y(
         weight_address_1[5]) );
-  INVX1 U266 ( .A(n197), .Y(n263) );
-  OAI21X1 U267 ( .A(n198), .B(n193), .C(n264), .Y(n197) );
-  MUX2X1 U268 ( .B(n265), .A(n266), .S(N126), .Y(n264) );
-  NOR2X1 U269 ( .A(pixel_address_2[5]), .B(n267), .Y(n266) );
-  XOR2X1 U270 ( .A(pixel_address_2[5]), .B(n267), .Y(n265) );
-  INVX1 U271 ( .A(n198), .Y(n267) );
-  OAI22X1 U272 ( .A(n165), .B(n203), .C(n202), .D(n154), .Y(
+  INVX1 U269 ( .A(n201), .Y(n267) );
+  OAI21X1 U270 ( .A(n202), .B(n197), .C(n268), .Y(n201) );
+  MUX2X1 U271 ( .B(n269), .A(n270), .S(N127), .Y(n268) );
+  NOR2X1 U272 ( .A(pixel_address_2[5]), .B(n271), .Y(n270) );
+  XOR2X1 U273 ( .A(pixel_address_2[5]), .B(n271), .Y(n269) );
+  INVX1 U274 ( .A(n202), .Y(n271) );
+  OAI22X1 U275 ( .A(n169), .B(n207), .C(n206), .D(n158), .Y(
         weight_address_1[4]) );
-  XOR2X1 U273 ( .A(n165), .B(pixel_address_2[4]), .Y(n202) );
-  INVX1 U274 ( .A(N129), .Y(n165) );
-  OAI22X1 U275 ( .A(n203), .B(n209), .C(n154), .D(n206), .Y(
+  XOR2X1 U276 ( .A(n169), .B(pixel_address_2[4]), .Y(n206) );
+  INVX1 U277 ( .A(N130), .Y(n169) );
+  OAI22X1 U278 ( .A(n207), .B(n213), .C(n158), .D(n210), .Y(
         weight_address_1[12]) );
-  XNOR2X1 U276 ( .A(n268), .B(n209), .Y(n206) );
-  NAND2X1 U277 ( .A(n210), .B(n269), .Y(n268) );
-  XNOR2X1 U278 ( .A(n270), .B(N128), .Y(n209) );
-  OAI21X1 U279 ( .A(n271), .B(n187), .C(n272), .Y(n270) );
-  OAI21X1 U280 ( .A(N127), .B(n273), .C(N128), .Y(n272) );
-  INVX1 U281 ( .A(n273), .Y(n271) );
-  OAI22X1 U282 ( .A(n203), .B(n214), .C(n212), .D(n154), .Y(
+  XNOR2X1 U279 ( .A(n272), .B(n213), .Y(n210) );
+  NAND2X1 U280 ( .A(n214), .B(n273), .Y(n272) );
+  XNOR2X1 U281 ( .A(n274), .B(N129), .Y(n213) );
+  OAI21X1 U282 ( .A(n275), .B(n191), .C(n276), .Y(n274) );
+  OAI21X1 U283 ( .A(N128), .B(n277), .C(N129), .Y(n276) );
+  INVX1 U284 ( .A(n277), .Y(n275) );
+  OAI22X1 U285 ( .A(n207), .B(n218), .C(n216), .D(n158), .Y(
         weight_address_1[11]) );
-  XOR2X1 U283 ( .A(n269), .B(n214), .Y(n212) );
-  OAI21X1 U284 ( .A(n274), .B(n275), .C(n225), .Y(n269) );
-  NOR2X1 U285 ( .A(n276), .B(n218), .Y(n275) );
-  INVX1 U286 ( .A(n210), .Y(n214) );
-  XOR2X1 U287 ( .A(n273), .B(n277), .Y(n210) );
-  XOR2X1 U288 ( .A(N128), .B(N127), .Y(n277) );
-  OAI21X1 U289 ( .A(n237), .B(n187), .C(n278), .Y(n273) );
-  INVX1 U290 ( .A(N127), .Y(n187) );
-  OAI22X1 U291 ( .A(n216), .B(n203), .C(n279), .D(n154), .Y(
+  XOR2X1 U286 ( .A(n273), .B(n218), .Y(n216) );
+  OAI21X1 U287 ( .A(n278), .B(n279), .C(n229), .Y(n273) );
+  NOR2X1 U288 ( .A(n280), .B(n222), .Y(n279) );
+  INVX1 U289 ( .A(n214), .Y(n218) );
+  XOR2X1 U290 ( .A(n277), .B(n281), .Y(n214) );
+  XOR2X1 U291 ( .A(N129), .B(N128), .Y(n281) );
+  OAI21X1 U292 ( .A(n241), .B(n191), .C(n282), .Y(n277) );
+  INVX1 U293 ( .A(N128), .Y(n191) );
+  OAI22X1 U294 ( .A(n220), .B(n207), .C(n283), .D(n158), .Y(
         weight_address_1[10]) );
-  INVX1 U292 ( .A(n228), .Y(n279) );
-  OAI21X1 U293 ( .A(n274), .B(n225), .C(n280), .Y(n228) );
-  MUX2X1 U294 ( .B(n281), .A(n282), .S(n218), .Y(n280) );
-  NOR2X1 U295 ( .A(n276), .B(n283), .Y(n282) );
-  XOR2X1 U296 ( .A(n283), .B(n276), .Y(n281) );
-  NAND2X1 U297 ( .A(n276), .B(n218), .Y(n225) );
-  INVX1 U298 ( .A(n216), .Y(n218) );
-  INVX1 U299 ( .A(n224), .Y(n276) );
-  NAND2X1 U300 ( .A(N157), .B(n200), .Y(n224) );
-  INVX1 U301 ( .A(n283), .Y(n274) );
-  OAI21X1 U302 ( .A(n240), .B(n284), .C(n148), .Y(n283) );
-  NAND2X1 U303 ( .A(pixel_address_2[9]), .B(n146), .Y(n148) );
-  NOR2X1 U304 ( .A(pixel_address_2[9]), .B(n146), .Y(n284) );
-  XNOR2X1 U305 ( .A(n237), .B(N129), .Y(n146) );
-  INVX1 U306 ( .A(N126), .Y(n237) );
-  INVX1 U307 ( .A(n244), .Y(n240) );
-  OAI21X1 U308 ( .A(n246), .B(n285), .C(n161), .Y(n244) );
-  NAND2X1 U309 ( .A(pixel_address_2[8]), .B(N129), .Y(n161) );
-  NOR2X1 U310 ( .A(pixel_address_2[8]), .B(N129), .Y(n285) );
-  INVX1 U311 ( .A(n250), .Y(n246) );
-  NAND2X1 U312 ( .A(n172), .B(n286), .Y(n250) );
-  OAI21X1 U313 ( .A(pixel_address_2[7]), .B(N128), .C(n256), .Y(n286) );
-  OAI21X1 U314 ( .A(n258), .B(n287), .C(n183), .Y(n256) );
-  NAND2X1 U315 ( .A(pixel_address_2[6]), .B(N127), .Y(n183) );
-  NOR2X1 U316 ( .A(pixel_address_2[6]), .B(N127), .Y(n287) );
-  INVX1 U317 ( .A(n262), .Y(n258) );
-  OAI21X1 U318 ( .A(n288), .B(n198), .C(n193), .Y(n262) );
-  NAND2X1 U319 ( .A(pixel_address_2[5]), .B(N126), .Y(n193) );
-  NAND2X1 U320 ( .A(n200), .B(n192), .Y(n198) );
-  INVX1 U321 ( .A(n201), .Y(n192) );
-  NAND2X1 U322 ( .A(N151), .B(N129), .Y(n201) );
-  NOR2X1 U323 ( .A(pixel_address_2[5]), .B(N126), .Y(n288) );
-  NAND2X1 U324 ( .A(pixel_address_2[7]), .B(N128), .Y(n172) );
-  XOR2X1 U325 ( .A(n278), .B(n289), .Y(n216) );
-  XOR2X1 U326 ( .A(N127), .B(N126), .Y(n289) );
-  NAND2X1 U327 ( .A(N126), .B(N129), .Y(n278) );
-  NOR2X1 U328 ( .A(n154), .B(n203), .Y(weight_address_1[0]) );
-  INVX1 U329 ( .A(n147), .Y(pixel_address_2[9]) );
-  NAND2X1 U330 ( .A(N156), .B(n200), .Y(n147) );
-  INVX1 U331 ( .A(n160), .Y(pixel_address_2[8]) );
-  NAND2X1 U332 ( .A(n200), .B(N155), .Y(n160) );
-  INVX1 U333 ( .A(n171), .Y(pixel_address_2[7]) );
-  NAND2X1 U334 ( .A(n200), .B(N154), .Y(n171) );
-  INVX1 U335 ( .A(n182), .Y(pixel_address_2[6]) );
-  NAND2X1 U336 ( .A(n200), .B(N153), .Y(n182) );
-  INVX1 U337 ( .A(n194), .Y(pixel_address_2[5]) );
-  NAND2X1 U338 ( .A(n200), .B(N152), .Y(n194) );
-  AND2X1 U339 ( .A(n200), .B(N151), .Y(pixel_address_2[4]) );
-  AND2X1 U340 ( .A(N162), .B(n200), .Y(weight_address_2[3]) );
-  AND2X1 U341 ( .A(N161), .B(n200), .Y(weight_address_2[2]) );
-  AND2X1 U342 ( .A(N160), .B(n200), .Y(weight_address_2[1]) );
-  NOR2X1 U343 ( .A(n290), .B(rollover_flag), .Y(n200) );
-  INVX1 U344 ( .A(n291), .Y(n313) );
-  AOI22X1 U345 ( .A(overflow), .B(n292), .C(N118), .D(n139), .Y(n291) );
-  INVX1 U346 ( .A(n294), .Y(n314) );
-  AOI22X1 U347 ( .A(row_result[15]), .B(n138), .C(N117), .D(n139), .Y(n294) );
-  INVX1 U348 ( .A(n295), .Y(n315) );
-  AOI22X1 U349 ( .A(row_result[14]), .B(n292), .C(N116), .D(n139), .Y(n295) );
-  INVX1 U350 ( .A(n296), .Y(n316) );
-  AOI22X1 U351 ( .A(row_result[13]), .B(n138), .C(N115), .D(n139), .Y(n296) );
-  INVX1 U352 ( .A(n297), .Y(n317) );
-  AOI22X1 U353 ( .A(row_result[12]), .B(n292), .C(N114), .D(n139), .Y(n297) );
-  INVX1 U354 ( .A(n298), .Y(n318) );
-  AOI22X1 U355 ( .A(row_result[11]), .B(n138), .C(N113), .D(n139), .Y(n298) );
-  INVX1 U356 ( .A(n299), .Y(n319) );
-  AOI22X1 U357 ( .A(row_result[10]), .B(n292), .C(N112), .D(n293), .Y(n299) );
-  INVX1 U358 ( .A(n300), .Y(n320) );
-  AOI22X1 U359 ( .A(row_result[9]), .B(n138), .C(N111), .D(n293), .Y(n300) );
-  INVX1 U360 ( .A(n301), .Y(n321) );
-  AOI22X1 U361 ( .A(row_result[8]), .B(n292), .C(N110), .D(n293), .Y(n301) );
-  INVX1 U362 ( .A(n302), .Y(n322) );
-  AOI22X1 U363 ( .A(row_result[7]), .B(n138), .C(N109), .D(n293), .Y(n302) );
-  INVX1 U364 ( .A(n303), .Y(n323) );
-  AOI22X1 U365 ( .A(row_result[6]), .B(n292), .C(N108), .D(n293), .Y(n303) );
-  INVX1 U366 ( .A(n304), .Y(n324) );
-  AOI22X1 U367 ( .A(row_result[5]), .B(n138), .C(N107), .D(n293), .Y(n304) );
-  INVX1 U368 ( .A(n305), .Y(n325) );
-  AOI22X1 U369 ( .A(row_result[4]), .B(n292), .C(N106), .D(n293), .Y(n305) );
-  INVX1 U370 ( .A(n306), .Y(n326) );
-  AOI22X1 U371 ( .A(row_result[3]), .B(n138), .C(N105), .D(n293), .Y(n306) );
-  INVX1 U372 ( .A(n307), .Y(n327) );
-  AOI22X1 U373 ( .A(row_result[2]), .B(n292), .C(N104), .D(n293), .Y(n307) );
-  INVX1 U374 ( .A(n308), .Y(n328) );
-  AOI22X1 U375 ( .A(row_result[1]), .B(n138), .C(N103), .D(n293), .Y(n308) );
-  INVX1 U376 ( .A(n309), .Y(n329) );
-  AOI22X1 U377 ( .A(row_result[0]), .B(n292), .C(N102), .D(n293), .Y(n309) );
-  OAI21X1 U378 ( .A(state[1]), .B(state[0]), .C(n310), .Y(n292) );
-  NOR2X1 U379 ( .A(state[0]), .B(n311), .Y(n136) );
-  MUX2X1 U380 ( .B(begin_mult), .A(rollover_flag), .S(state[1]), .Y(n311) );
-  OR2X1 U381 ( .A(n135), .B(done_row), .Y(count_enable) );
-  INVX1 U382 ( .A(n310), .Y(done_row) );
-  NAND2X1 U383 ( .A(state[0]), .B(state[1]), .Y(n310) );
-  NAND2X1 U384 ( .A(n203), .B(n290), .Y(n135) );
-  INVX1 U385 ( .A(n293), .Y(n290) );
-  NOR2X1 U386 ( .A(n312), .B(state[0]), .Y(n293) );
-  NAND2X1 U387 ( .A(state[0]), .B(n312), .Y(n203) );
-  INVX1 U388 ( .A(state[1]), .Y(n312) );
+  INVX1 U295 ( .A(n232), .Y(n283) );
+  OAI21X1 U296 ( .A(n278), .B(n229), .C(n284), .Y(n232) );
+  MUX2X1 U297 ( .B(n285), .A(n286), .S(n222), .Y(n284) );
+  NOR2X1 U298 ( .A(n280), .B(n287), .Y(n286) );
+  XOR2X1 U299 ( .A(n287), .B(n280), .Y(n285) );
+  NAND2X1 U300 ( .A(n280), .B(n222), .Y(n229) );
+  INVX1 U301 ( .A(n220), .Y(n222) );
+  INVX1 U302 ( .A(n228), .Y(n280) );
+  NAND2X1 U303 ( .A(N158), .B(n204), .Y(n228) );
+  INVX1 U304 ( .A(n287), .Y(n278) );
+  OAI21X1 U305 ( .A(n244), .B(n288), .C(n152), .Y(n287) );
+  NAND2X1 U306 ( .A(pixel_address_2[9]), .B(n150), .Y(n152) );
+  NOR2X1 U307 ( .A(pixel_address_2[9]), .B(n150), .Y(n288) );
+  XNOR2X1 U308 ( .A(n241), .B(N130), .Y(n150) );
+  INVX1 U309 ( .A(N127), .Y(n241) );
+  INVX1 U310 ( .A(n248), .Y(n244) );
+  OAI21X1 U311 ( .A(n250), .B(n289), .C(n165), .Y(n248) );
+  NAND2X1 U312 ( .A(pixel_address_2[8]), .B(N130), .Y(n165) );
+  NOR2X1 U313 ( .A(pixel_address_2[8]), .B(N130), .Y(n289) );
+  INVX1 U314 ( .A(n254), .Y(n250) );
+  NAND2X1 U315 ( .A(n176), .B(n290), .Y(n254) );
+  OAI21X1 U316 ( .A(pixel_address_2[7]), .B(N129), .C(n260), .Y(n290) );
+  OAI21X1 U317 ( .A(n262), .B(n291), .C(n187), .Y(n260) );
+  NAND2X1 U318 ( .A(pixel_address_2[6]), .B(N128), .Y(n187) );
+  NOR2X1 U319 ( .A(pixel_address_2[6]), .B(N128), .Y(n291) );
+  INVX1 U320 ( .A(n266), .Y(n262) );
+  OAI21X1 U321 ( .A(n292), .B(n202), .C(n197), .Y(n266) );
+  NAND2X1 U322 ( .A(pixel_address_2[5]), .B(N127), .Y(n197) );
+  NAND2X1 U323 ( .A(n204), .B(n196), .Y(n202) );
+  INVX1 U324 ( .A(n205), .Y(n196) );
+  NAND2X1 U325 ( .A(N152), .B(N130), .Y(n205) );
+  NOR2X1 U326 ( .A(pixel_address_2[5]), .B(N127), .Y(n292) );
+  NAND2X1 U327 ( .A(pixel_address_2[7]), .B(N129), .Y(n176) );
+  XOR2X1 U328 ( .A(n282), .B(n293), .Y(n220) );
+  XOR2X1 U329 ( .A(N128), .B(N127), .Y(n293) );
+  NAND2X1 U330 ( .A(N127), .B(N130), .Y(n282) );
+  NOR2X1 U331 ( .A(n141), .B(n207), .Y(weight_address_1[0]) );
+  INVX1 U332 ( .A(n151), .Y(pixel_address_2[9]) );
+  NAND2X1 U333 ( .A(N157), .B(n204), .Y(n151) );
+  INVX1 U334 ( .A(n164), .Y(pixel_address_2[8]) );
+  NAND2X1 U335 ( .A(n204), .B(N156), .Y(n164) );
+  INVX1 U336 ( .A(n175), .Y(pixel_address_2[7]) );
+  NAND2X1 U337 ( .A(n204), .B(N155), .Y(n175) );
+  INVX1 U338 ( .A(n186), .Y(pixel_address_2[6]) );
+  NAND2X1 U339 ( .A(n204), .B(N154), .Y(n186) );
+  INVX1 U340 ( .A(n198), .Y(pixel_address_2[5]) );
+  NAND2X1 U341 ( .A(n204), .B(N153), .Y(n198) );
+  AND2X1 U342 ( .A(n204), .B(N152), .Y(pixel_address_2[4]) );
+  AND2X1 U343 ( .A(N163), .B(n204), .Y(weight_address_2[3]) );
+  AND2X1 U344 ( .A(N162), .B(n204), .Y(weight_address_2[2]) );
+  AND2X1 U345 ( .A(N161), .B(n204), .Y(weight_address_2[1]) );
+  INVX1 U346 ( .A(n158), .Y(n204) );
+  NAND2X1 U347 ( .A(n143), .B(n295), .Y(n158) );
+  INVX1 U348 ( .A(n296), .Y(n320) );
+  AOI22X1 U349 ( .A(overflow), .B(n297), .C(N120), .D(n143), .Y(n296) );
+  INVX1 U350 ( .A(n298), .Y(n321) );
+  AOI22X1 U351 ( .A(row_result[15]), .B(n142), .C(N119), .D(n143), .Y(n298) );
+  INVX1 U352 ( .A(n299), .Y(n322) );
+  AOI22X1 U353 ( .A(row_result[14]), .B(n297), .C(N118), .D(n143), .Y(n299) );
+  INVX1 U354 ( .A(n300), .Y(n323) );
+  AOI22X1 U355 ( .A(row_result[13]), .B(n142), .C(N117), .D(n143), .Y(n300) );
+  INVX1 U356 ( .A(n301), .Y(n324) );
+  AOI22X1 U357 ( .A(row_result[12]), .B(n297), .C(N116), .D(n143), .Y(n301) );
+  INVX1 U358 ( .A(n302), .Y(n325) );
+  AOI22X1 U359 ( .A(row_result[11]), .B(n142), .C(N115), .D(n143), .Y(n302) );
+  INVX1 U360 ( .A(n303), .Y(n326) );
+  AOI22X1 U361 ( .A(row_result[10]), .B(n297), .C(N114), .D(n143), .Y(n303) );
+  INVX1 U362 ( .A(n304), .Y(n327) );
+  AOI22X1 U363 ( .A(row_result[9]), .B(n142), .C(N113), .D(n143), .Y(n304) );
+  INVX1 U364 ( .A(n305), .Y(n328) );
+  AOI22X1 U365 ( .A(row_result[8]), .B(n297), .C(N112), .D(n143), .Y(n305) );
+  INVX1 U366 ( .A(n306), .Y(n329) );
+  AOI22X1 U367 ( .A(row_result[7]), .B(n142), .C(N111), .D(n143), .Y(n306) );
+  INVX1 U368 ( .A(n307), .Y(n330) );
+  AOI22X1 U369 ( .A(row_result[6]), .B(n297), .C(N110), .D(n143), .Y(n307) );
+  INVX1 U370 ( .A(n308), .Y(n331) );
+  AOI22X1 U371 ( .A(row_result[5]), .B(n142), .C(N109), .D(n143), .Y(n308) );
+  INVX1 U372 ( .A(n309), .Y(n332) );
+  AOI22X1 U373 ( .A(row_result[4]), .B(n297), .C(N108), .D(n143), .Y(n309) );
+  INVX1 U374 ( .A(n310), .Y(n333) );
+  AOI22X1 U375 ( .A(row_result[3]), .B(n142), .C(N107), .D(n143), .Y(n310) );
+  INVX1 U376 ( .A(n311), .Y(n334) );
+  AOI22X1 U377 ( .A(row_result[2]), .B(n297), .C(N106), .D(n143), .Y(n311) );
+  INVX1 U378 ( .A(n312), .Y(n335) );
+  AOI22X1 U379 ( .A(row_result[1]), .B(n142), .C(N105), .D(n143), .Y(n312) );
+  INVX1 U380 ( .A(n313), .Y(n336) );
+  AOI22X1 U381 ( .A(row_result[0]), .B(n297), .C(N104), .D(n143), .Y(n313) );
+  INVX1 U382 ( .A(n314), .Y(done_row) );
+  NOR2X1 U383 ( .A(state[0]), .B(n315), .Y(n140) );
+  MUX2X1 U384 ( .B(begin_mult), .A(rollover_flag), .S(state[1]), .Y(n315) );
+  INVX1 U385 ( .A(n316), .Y(n139) );
+  OAI21X1 U386 ( .A(n295), .B(n317), .C(n318), .Y(n138) );
+  INVX1 U387 ( .A(w_result_ena), .Y(n318) );
+  OAI21X1 U388 ( .A(state[1]), .B(state[0]), .C(n314), .Y(n297) );
+  INVX1 U389 ( .A(rollover_flag), .Y(n295) );
+  NAND2X1 U390 ( .A(n316), .B(n314), .Y(count_enable) );
+  NAND2X1 U391 ( .A(state[0]), .B(state[1]), .Y(n314) );
+  NOR2X1 U392 ( .A(n155), .B(n143), .Y(n316) );
+  NOR2X1 U393 ( .A(n319), .B(state[0]), .Y(n294) );
+  INVX1 U394 ( .A(n207), .Y(n155) );
+  NAND2X1 U395 ( .A(state[0]), .B(n319), .Y(n207) );
+  INVX1 U396 ( .A(state[1]), .Y(n319) );
 endmodule
 
