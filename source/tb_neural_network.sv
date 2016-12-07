@@ -8,7 +8,6 @@
 
 `timescale 1ns / 100ps
 
-
 module tb_neural_network ();
    
    localparam	CLK_PERIOD	= 2.5;

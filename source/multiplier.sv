@@ -22,7 +22,8 @@ module multiplier
 	output wire [12:0] weight_address_1,
 	output wire [12:0] weight_address_2,
 	output wire done_row,
-	output wire [15:0] row_result
+	output wire [15:0] row_result,
+	output wire overflow
 );
 
 parameter PIXEL_ADDR_START = 8'h00;
@@ -33,8 +34,8 @@ logic row_complete;
 logic rollover_flag;
 
 
-logic [15:0] result;
-logic [15:0] next_result;
+logic [16:0] result;
+logic [16:0] next_result;
 logic [9:0] count;
 
 logic [15:0] product_1;
@@ -45,7 +46,8 @@ logic [9:0] pixel_addr_2;
 logic [12:0] weight_addr_1;
 logic [12:0] weight_addr_2;
 
-assign row_result = result;
+assign row_result = result[15:0];
+assign overflow = result[16];
 assign done_row = row_complete;
 assign pixel_address_1 = pixel_addr_1;
 assign pixel_address_2 = pixel_addr_2;
