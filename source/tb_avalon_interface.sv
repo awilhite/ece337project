@@ -10,6 +10,8 @@
 
 module tb_avalon_interface ();
 	localparam CLK_PERIOD = 20;
+	localparam CONTROL_REG = 13'd4126;
+	localparam STATUS_REG = 13'd4127;
 	reg tb_clk;
 
 
@@ -32,8 +34,8 @@ module tb_avalon_interface ();
 	logic [16:0] tb_result_output;
 	logic tb_done_calc;
 	logic tb_overflow;
-	logic [10:0]tb_weight_address;
-	logic [10:0]tb_pixel_address;
+	logic [11:0]tb_weight_address;
+	logic [9:0]tb_pixel_address;
 	logic tb_w_enable_weights;
 	logic tb_w_enable_pixels;
 	logic tb_readdatavalid;
@@ -42,6 +44,7 @@ module tb_avalon_interface ();
 	logic [3:0] tb_output_address;
 	logic tb_waitrequest;
 	logic tb_start_calc;
+	logic tb_clear_data;
 	logic [1:0] tb_response;
 
 	avalon_interface DUT(
@@ -67,6 +70,7 @@ module tb_avalon_interface ();
 		.output_address(tb_output_address),
 		.waitrequest(tb_waitrequest),
 		.start_calc(tb_start_calc),
+		.clear_data(tb_clear_data),
 		.response(tb_response)
 		);
 
@@ -82,14 +86,17 @@ module tb_avalon_interface ();
 	end
 	endtask : reset_dut
 
-	task read(input logic [10:0] addr);
+	task read(input logic [12:0] addr);
 	begin
 		@(posedge tb_clk);
 		tb_address = addr;
 		tb_read = 1'b1;
 		tb_write = 1'b0;
-		@(negedge tb_waitrequest || tb_response != 'b0);
-		@(posedge tb_readdatavalid || tb_response != 'b0);
+		@(negedge tb_waitrequest);
+
+		if(tb_response == 'b0) begin
+			@(posedge tb_readdatavalid);
+		end
 		tb_address = '0;
 		tb_read = 1'b0;
 
@@ -98,7 +105,7 @@ module tb_avalon_interface ();
 	end
 	endtask
 
-	task write(input logic [10:0] addr, input logic [31:0] data);
+	task write(input logic [12:0] addr, input logic [31:0] data);
 	begin
 		@(posedge tb_clk);
 		tb_address = addr;
@@ -116,21 +123,27 @@ module tb_avalon_interface ();
 	end
 	endtask
 
-	task burst_write(input logic [10:0] addr, input logic [31:0] data[0:784]);
+	task burst_write(input logic [12:0] addr, input logic [31:0] data[0:195]);
 	begin
 		@(posedge tb_clk);
 		tb_address = addr;
 		tb_write = 1'b1;
 		tb_read = 1'b0;
 		tb_beginbursttransfer= 1'b1;
-		tb_burstcount = 11'd784;
-		for (int i = 0; i < 784; i++) begin
+		tb_burstcount = 11'd196;
+		@(negedge tb_waitrequest)
+		for (int i = 0; i <= 195; i++) begin
 			tb_writedata = data[i];
 			@(negedge tb_waitrequest);
 			@(posedge tb_clk);
 			tb_beginbursttransfer = 1'b0;
 			tb_burstcount = 'b0;
 			tb_address = 'b0;
+			if(data[i] != tb_store_data || tb_w_enable_pixels != 1'b1 || tb_pixel_address != i) begin
+				$error("data burst failed");
+			end
+			else
+				$info("burst good");
 
 		end
 		tb_write = 1'b0;
@@ -140,7 +153,7 @@ module tb_avalon_interface ();
 	endtask
 
 	logic [31:0] expected_val = 32'h0000000F;
-	logic [31:0]data[0:784];
+	logic [31:0]data[0:195];
 
 	initial begin
 		tb_beginbursttransfer = 'b0;
@@ -153,24 +166,39 @@ module tb_avalon_interface ();
 
 		reset_dut();
 
-		write(11'h62B,expected_val);
+		write(CONTROL_REG,expected_val);
 		if(tb_response != 2'b00) begin
 			$error("bad write response");
 		end
-		read(11'h62B);
+		read(CONTROL_REG);
 		#(CLK_PERIOD/10)
 		if(tb_response == 2'b00 && tb_readdata == expected_val) begin
 			$info("Data written sucessfully");
 		end
 		else
 			$error("Error in data write");
-		for (int i=0;i<=784;i=i+1)
+
+		for (int i=0;i<=195;i=i+1)
     		data[i] = 2*i;
 		burst_write(11'h000,data);
 
-		read(11'hFFF);
-		read(11'h62A);
-		read(11'h629);
+		read(13'd5000);
+		#(CLK_PERIOD/10);
+		if(tb_response != 2'b11) begin
+			$error("No address error!");
+		end
+		read(13'd4125);
+		#(CLK_PERIOD/10);
+		if(tb_output_address != 4'd10) begin
+			$error("Bad address output");
+		end
+		read(13'd4124);
+		#(CLK_PERIOD/10);
+		if(tb_output_address != 4'd9) begin
+			$error("Bad address output");
+		end
+		tb_done_calc = 1'b1;
+		read(STATUS_REG);
 
 	end 
 

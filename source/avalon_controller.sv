@@ -18,7 +18,7 @@ module avalon_controller (
 	input logic done_calc,
 	output logic readdatavalid,
 	output logic writeresponsevalid,
-	output logic [10:0] output_address,
+	output logic [12:0] output_address,
 	output logic end_wait,
 	output logic w_ena,
 	output logic [1:0] response
@@ -42,7 +42,7 @@ typedef enum logic [4:0]
 	flex_counter #(10) burstcounter(clk,n_rst,clear_cnt,count_ena,rollover,cnt,done_burst);
 
 
-	parameter MAXADDR = 11'h62C;
+	parameter MAXADDR = 13'd4128;
 
 
 	always_ff@(posedge clk, negedge n_rst)

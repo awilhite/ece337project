@@ -19,8 +19,8 @@ module avalon_interface (
 	input logic [16:0] result_output,
 	input logic done_calc,
 	input logic overflow,
-	output logic [10:0] weight_address,
-	output logic [10:0] pixel_address,
+	output logic [11:0] weight_address,
+	output logic [9:0] pixel_address,
 	output logic w_enable_weights,
 	output logic w_enable_pixels,
 	output logic readdatavalid,
@@ -29,12 +29,14 @@ module avalon_interface (
 	output logic [3:0] output_address,
 	output logic waitrequest,
 	output logic start_calc,
+	output logic clear_data,
 	output logic [1:0] response
 
 );
 
 logic w_ena, end_wait;
-logic [10:0] int_addr;
+logic [12:0] int_addr;
+logic [12:0] temp_addr;
 logic [31:0] control, next_control, status, next_status;
 
 
@@ -59,9 +61,9 @@ avalon_controller AC(
 
 
 
-parameter PIXEL_ADDR_MAX = 11'h30f;
-parameter WEIGHT_ADDR_MAX = 11'h61f;
-parameter RESULT_ADDR_MAX = 11'h62a;
+parameter PIXEL_ADDR_MAX = 13'd195;
+parameter WEIGHT_ADDR_MAX = 13'd4115;
+parameter RESULT_ADDR_MAX = 13'd4125;
 
 assign waitrequest = !end_wait;
 assign start_calc = control[3];
@@ -70,6 +72,7 @@ assign clear_data = control[0];
 always_comb begin
 	//next_status = status;
 	next_control = control;
+	temp_addr = 'b0;
 	store_data = 'b0;
 	output_address = 'b0;
 	pixel_address = 'b0;
@@ -79,42 +82,44 @@ always_comb begin
 	readdata = 'b0;
 	next_status = {30'b0,overflow,done_calc};
 	if(w_ena == 1'b0) begin
-		if(int_addr < PIXEL_ADDR_MAX) begin
+		if(int_addr <= PIXEL_ADDR_MAX) begin
 			// shouldn't need to read from pixel data
 		end 
-		else if(int_addr < WEIGHT_ADDR_MAX) begin
+		else if(int_addr <= WEIGHT_ADDR_MAX) begin
 			// shouldn't need to read from weights
 		end
 		else if(int_addr <= RESULT_ADDR_MAX) begin 
-			output_address = int_addr[3:0];
+			temp_addr = (int_addr - WEIGHT_ADDR_MAX);
+			output_address = temp_addr[3:0];
 			readdata = result_output;
 		end
-		else if(int_addr == 11'h62B) begin
+		else if(int_addr == 13'd4126) begin
 			readdata = control;
 		end
-		else if (int_addr == 11'h62C) begin 
+		else if (int_addr == 13'd4127) begin 
 			readdata = status;
 		end
 	end
 	else begin 
-		if(int_addr < PIXEL_ADDR_MAX) begin
-			pixel_address = int_addr;
+		if(int_addr <= PIXEL_ADDR_MAX) begin
+			pixel_address = int_addr[9:0];
 			w_enable_pixels = 1'b1;
 			store_data = writedata;
 		end 
-		else if(int_addr < WEIGHT_ADDR_MAX) begin
-			weight_address = int_addr - PIXEL_ADDR_MAX;
+		else if(int_addr <= WEIGHT_ADDR_MAX) begin
+			temp_addr = int_addr - PIXEL_ADDR_MAX;
+			weight_address = temp_addr[11:0];
 			w_enable_weights = 1'b1;
 			store_data = writedata;
 		end
-		else if(int_addr < RESULT_ADDR_MAX) begin 
+		else if(int_addr <= RESULT_ADDR_MAX) begin 
 			store_data = writedata;
 		end
-		else if(int_addr == 11'h62B) begin
+		else if(int_addr == 13'd4126) begin
 			next_control = writedata;
 			//next_csr = writedata;
 		end
-		else if (int_addr == 11'h62C) begin 
+		else if (int_addr == 13'd4127) begin 
 			// next_status = writedata;
 		end
 	end
