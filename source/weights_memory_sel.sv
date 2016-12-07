@@ -6,7 +6,7 @@
 // Version:     1.0  Initial Design Entry
 // Description: Weights memory with address select
 
-module weights_mem_sel
+module weights_memory_sel
 (
 	input wire clk,
 	input wire [12:0] address_a_1,

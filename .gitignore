@@ -24,3 +24,5 @@ default.svf
 covhtmlreport/
 #*#
 *.qws
+*~
+

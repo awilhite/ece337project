@@ -13,12 +13,12 @@ module avalon_controller (
 	input logic read,
 	input logic beginbursttransfer,
 	input logic [9:0] burstcount,
-	input logic [10:0] address,
+	input logic [12:0] address,
 	input logic [31:0] writedata,
 	input logic done_calc,
 	output logic readdatavalid,
 	output logic writeresponsevalid,
-	output logic [10:0] output_address,
+	output logic [12:0] output_address,
 	output logic end_wait,
 	output logic w_ena,
 	output logic [1:0] response
@@ -32,7 +32,7 @@ typedef enum logic [4:0]
 		  chk_burst, burst_write, burst_end, res_err } state_type;
 
 	state_type state, next_state;
-	logic [10:0] next_address;
+	logic [12:0] next_address;
 	logic [15:0] data;
 	logic [9:0] rollover, next_rollover;
 	logic count_ena, clear_cnt, done_burst;
@@ -42,7 +42,7 @@ typedef enum logic [4:0]
 	flex_counter #(10) burstcounter(clk,n_rst,clear_cnt,count_ena,rollover,cnt,done_burst);
 
 
-	parameter MAXADDR = 11'h62C;
+	parameter MAXADDR = 13'd4128;
 
 
 	always_ff@(posedge clk, negedge n_rst)
@@ -66,26 +66,30 @@ typedef enum logic [4:0]
 		case(state)
 			idle:begin 
 				if(read == 1 && beginbursttransfer == 0) begin
-					if(address >= 0 && address < MAXADDR) begin
+					if(address >= 0 && address <= MAXADDR) begin
 						next_state = begin_read;
 					end
 					else
 						next_state = bad_addr;
 				end
 				if(write == 1 && beginbursttransfer == 0) begin
-					if(address >= 0 && address < MAXADDR) begin
+					if(address >= 0 && address <= MAXADDR) begin
 						next_state = begin_write;
 					end
 					else
 						next_state = bad_addr;
 				end
 				if(write == 1 && beginbursttransfer == 1) begin
-					if(address >= 0 && (address + burstcount) < MAXADDR) begin
+					if(address >= 0 && (address + burstcount) <= MAXADDR) begin
 						next_state = burst_begin;
 					end
 					else
 						next_state = bad_addr;
 				end
+			end
+
+			bad_addr:begin 
+				next_state = idle;
 			end
 
 			begin_read:begin 
@@ -154,6 +158,7 @@ typedef enum logic [4:0]
 
 			begin_write:begin 
 				next_address = address;
+				w_ena = 1'b1;
 				//end_wait = 1'b1;
 			end
 
@@ -195,6 +200,11 @@ typedef enum logic [4:0]
 			burst_end:begin
 				clear_cnt = 1'b1;
 				next_rollover = 'b0;
+			end
+
+			bad_addr:begin 
+				response = 2'b11;
+				end_wait = 1'b1;
 			end
 
 			res_err:begin 

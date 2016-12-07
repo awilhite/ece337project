@@ -47,6 +47,13 @@ module neural_network (
 	logic [12:0] weight_address_2;
 	logic done_row;
 	logic [15:0] row_result;
+	logic overflow;
+	logic w_result_ena;
+
+	logic [3:0] out_sel;
+	logic [3:0] in_sel;
+	logic clear_data;
+	logic [15:0] out_data;
 
 	avalon_interface avalon_interface_inst(
 		.clk(clk),    // Clock
@@ -89,7 +96,9 @@ module neural_network (
 		.weight_address_1(weight_address_1),
 		.weight_address_2(weight_address_2),
 		.done_row(done_row),
-		.row_result(row_result)
+		.row_result(row_result),
+		.overflow(overflow),
+		.w_result_ena(w_result_ena)
 	);
 
 	main_controller main_controller_inst
@@ -103,7 +112,18 @@ module neural_network (
 		.done_calc(done_calc)
 	);
 
-	pixel_memory	pixel_memory_inst (
+	result_registers result_registers_inst (
+		.clk(clk),    // Clock
+		.n_rst(n_rst),  // Asynchronous reset active low
+		.out_sel(out_sel),
+		.in_sel(in_sel),
+		.w_enable(w_result_ena),
+		.clear_data(clear_data),
+		.in_data(row_result),
+		.out_data(out_data)
+	);
+
+	/*pixel_mem_16bit	pixel_mem_inst (
 		.address_a ( pixel_address ),
 		.address_b ( 'b0 ),
 		.clock ( clk ),
@@ -113,7 +133,19 @@ module neural_network (
 		.wren_b ( 'b0 ),
 		.q_a ( q_a ),
 		.q_b ( q_b )
-		);
+	);*/
+
+	/*weights_mem_32bit	weights_mem_inst (
+		.address_a ( weights_address ),
+		.address_b ( 'b0 ),
+		.clock ( clk ),
+		.data_a ( store_data ),
+		.data_b ( 'b0 ),
+		.wren_a ( w_enable_pixels ),
+		.wren_b ( 'b0 ),
+		.q_a ( q_a ),
+		.q_b ( q_b )
+	);*/
 
 
 endmodule

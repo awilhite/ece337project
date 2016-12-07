@@ -22,7 +22,9 @@ module multiplier
 	output wire [12:0] weight_address_1,
 	output wire [12:0] weight_address_2,
 	output wire done_row,
-	output wire [15:0] row_result
+	output wire [15:0] row_result,
+	output wire overflow,
+	output wire w_result_ena
 );
 
 parameter PIXEL_ADDR_START = 8'h00;
@@ -32,9 +34,11 @@ logic count_enable;
 logic row_complete;
 logic rollover_flag;
 
+logic write_enable;
+logic next_w_ena;
 
-logic [15:0] result;
-logic [15:0] next_result;
+logic [16:0] result;
+logic [16:0] next_result;
 logic [9:0] count;
 
 logic [15:0] product_1;
@@ -43,14 +47,17 @@ logic [15:0] product_2;
 logic [9:0] pixel_addr_1;
 logic [9:0] pixel_addr_2;
 logic [12:0] weight_addr_1;
-logic [12:0] weight_addr_2;
+logic [12:0] weight_addr_2; 
 
-assign row_result = result;
+assign row_result = result[15:0];
+assign overflow = result[16];
 assign done_row = row_complete;
 assign pixel_address_1 = pixel_addr_1;
 assign pixel_address_2 = pixel_addr_2;
 assign weight_address_1 = weight_addr_1;
 assign weight_address_2 = weight_addr_2;
+
+assign w_result_ena = write_enable;
 
 // DEFINE STATES
 
@@ -68,10 +75,12 @@ always_ff @(posedge clk, negedge n_rst) begin
 	if (~n_rst) begin
 		state <= idle;
 		result <= 'b0;
+		write_enable <= 'b0;
 	end
 	else begin
 		state <= next_state;
 		result <= next_result;
+		write_enable <= next_w_ena;
 	end
 end
 
@@ -84,6 +93,7 @@ always_comb begin
 	// DEFINE DEFAULT VALUES
 
 	next_state = state;
+	next_w_ena = write_enable;
 
 	// OUTPUT LOGIC CASES
 
@@ -108,6 +118,7 @@ always_comb begin
 			else begin
 				// row is complete
 				next_state = done;
+				next_w_ena = 1'b1;
 			end
 		end
 
