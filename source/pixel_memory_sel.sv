@@ -6,12 +6,12 @@
 // Version:     1.0  Initial Design Entry
 // Description: Pixel memory with address select
 
-module pixel_mem_sel
+module pixel_memory_sel
 (
 	input wire clk,
 	input wire [9:0] address_a_1,
 	input wire [9:0] address_a_2,
-	input wire address_b,
+	input wire [9:0] address_b,
 	input wire select,
 	input wire [7:0] data_a,
 	input wire [7:0] data_b,
@@ -25,8 +25,7 @@ wire address_a;
 
 assign address_a = select ? address_a_2 : address_a_1;
 
-pixel_memory pixel_memory_inst 
-(
+pixel_memory_inst pmi(
 	.address_a(address_a),
 	.address_b(address_b),
 	.clock(clk),

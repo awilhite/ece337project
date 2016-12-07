@@ -1,0 +1,44 @@
+// $Id: $
+// File name:   tb_neural_network.sv
+// Created:     12/1/2016
+// Author:      Josef Danial
+// Lab Section: 337-04
+// Version:     1.0  Initial Design Entry
+// Description: Top level testbench
+
+`timescale 1ns / 100ps
+
+
+module tb_neural_network ();
+   
+   localparam	CLK_PERIOD	= 2.5;
+   
+   // Clock variable
+   reg tb_clk;
+   
+   // Clock generation block
+   always
+     begin
+	tb_clk = 1'b0;
+	#(CLK_PERIOD/2.0);
+	tb_clk = 1'b1;
+	#(CLK_PERIOD/2.0);
+     end
+
+   //Portmap signals
+   logic clk;    // Clock
+   logic reset_n;	
+   logic read;
+   logic beginbursttransfer;
+   logic write;
+   logic [9:0] burstcount;
+   logic [10:0] address; 
+   logic [31:0] writedata;
+   logic [31:0] readdata;
+   logic readdatavalid;
+   logic waitrequest;
+   logic [1:0] response;
+   
+		 
+
+endmodule
