@@ -8,34 +8,37 @@
 
 `timescale 1ns / 100ps
 
-module tb_pixel_memory_test
-  ();
+module pixel_memory_test
+(
+ input [8:0]   address_a,
+ input [8:0]   address_b,
+ input 	       clk,
+ input 	       select,
+ input [15:0]  data_a,
+ input [15:0]  data_b,
+ input 	       wren_a,
+ input 	       wren_b,
+ output [15:0] q_a,
+ output [15:0] q_b
+);
 
-   localparam	CLK_PERIOD	= 2.5;
-   
-   // Clock variable
-   reg tb_clk;
-   
-   // Clock generation block
-   always
-     begin
-	tb_clk = 1'b0;
-	#(CLK_PERIOD/2.0);
-	tb_clk = 1'b1;
-	#(CLK_PERIOD/2.0);
-     end
-
-   // Declare Design Under Test (DUT) portmap signals
-   //reg [9:0] tb_add_a_1, tb_add_a_2, tb_address_b;
-   reg tb_select, tb_wren_a, tb_wren_b;
-   reg [7:0] tb_data_a, tb_data_b;
-   reg [7:0] tb_q_a, tb_q_b;
    integer   file;
    
+   /*
+    * always_ff @(posedge clk)
+     begin
+	
+     end
+    */
    
-   // DUT port map
-  // pixel_memory_sel DUT(.clk(tb_clk), .address_a_1(tb_add_a_1), .address_a_2(tb_add_a_2), .address_b(tb_address_b), .select(tb_select), .data_a(tb_data_a), .data_b(tb_data_b), .wren_a(tb_wren_a), .wren_b(tb_wren_b), .q_a(tb_q_a), .q_b(tb_q_b));
-   
+   always_comb
+     begin
+	file = $fopen("mem.txt","r+");
+	$fwrite(file,"%d\n%d\n",data_a, data_b);
+	$fclose(file);
+     end
+
+   /*
    // Test bench process
    initial
      begin
@@ -80,4 +83,6 @@ module tb_pixel_memory_test
 	$fclose(file);
 	
      end // initial begin
+    */
+   
 endmodule // tb_pixel_memory_sel

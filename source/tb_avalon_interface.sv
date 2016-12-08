@@ -24,35 +24,30 @@ module tb_avalon_interface ();
 		tb_clk = 1'b1;
 		#(CLK_PERIOD/2.0);
 	end
-	// testbench signals
-	logic tb_n_rst;
-	logic tb_write;
-	logic tb_read;
-	logic tb_beginbursttransfer;
-	logic [9:0] tb_burstcount;
-	logic [12:0] tb_address;
-	logic [31:0] tb_writedata;
-	logic [31:0] tb_readdata;
-	logic [16:0] tb_result_output;
-	logic tb_done_calc;
-	logic tb_overflow;
-	logic [11:0]tb_weight_address;
-	logic [9:0]tb_pixel_address1;
-	logic [9:0]tb_pixel_address2;
-	logic tb_w_enable_weights;
-	logic tb_w_enable_pixels;
-	logic tb_readdatavalid;
-	logic tb_writeresponsevalid;
-	logic [15:0] tb_pixel_data1;
-	logic [15:0] tb_pixel_data2;
-	logic [31:0] tb_weight_data;
-	logic [3:0] tb_output_address;
-	logic tb_waitrequest;
-	logic tb_start_calc;
-	logic tb_clear_data;
-	logic [1:0] tb_response;
-	logic [15:0] tmp_weights1;
-	logic [15:0] tmp_weights2;
+
+   logic tb_n_rst;
+   logic tb_write;
+   logic tb_read;
+   logic tb_beginbursttransfer;
+   logic [9:0] tb_burstcount;
+   logic [12:0] tb_address;
+   logic [31:0] tb_writedata;
+   logic [31:0] tb_readdata;
+   logic [16:0] tb_result_output;
+   logic 	tb_done_calc;
+   logic 	tb_overflow;
+   logic [11:0] tb_weight_address;
+   logic [9:0] 	tb_pixel_address;
+   logic 	tb_w_enable_weights;
+   logic 	tb_w_enable_pixels;
+   logic 	tb_readdatavalid;
+   logic 	tb_writeresponsevalid;
+   logic [15:0] tb_store_data;
+   logic [3:0] 	tb_output_address;
+   logic 	tb_waitrequest;
+   logic 	tb_start_calc;
+   logic 	tb_clear_data;
+   logic [1:0] 	tb_response;
 
 	// DUT portmap
 	avalon_interface DUT(

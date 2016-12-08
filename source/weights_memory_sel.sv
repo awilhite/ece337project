@@ -9,16 +9,16 @@
 module weights_memory_sel
 (
 	input wire clk,
-	input wire [12:0] address_a_1,
-	input wire [12:0] address_a_2,
+	input wire [11:0] address_a_1,
+	input wire [11:0] address_a_2,
 	input wire address_b,
 	input wire select,
-	input wire [15:0] data_a,
-	input wire [15:0] data_b,
+	input wire [31:0] data_a,
+	input wire [31:0] data_b,
 	input wire wren_a,
 	input wire wren_b,
-	output wire [15:0] q_a,
-	output wire [15:0] q_b
+	output wire [31:0] q_a,
+	output wire [31:0] q_b
 );
 
 wire address_a;
