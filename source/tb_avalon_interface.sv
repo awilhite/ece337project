@@ -37,12 +37,15 @@ module tb_avalon_interface ();
    logic 	tb_done_calc;
    logic 	tb_overflow;
    logic [11:0] tb_weight_address;
-   logic [9:0] 	tb_pixel_address;
+   logic [9:0] 	tb_pixel_address1;
+   logic [9:0] 	tb_pixel_address2;
    logic 	tb_w_enable_weights;
    logic 	tb_w_enable_pixels;
    logic 	tb_readdatavalid;
    logic 	tb_writeresponsevalid;
-   logic [15:0] tb_store_data;
+   logic [15:0] tb_pixel_data1;
+   logic [15:0] tb_pixel_data2;
+   logic [31:0] tb_weight_data;
    logic [3:0] 	tb_output_address;
    logic 	tb_waitrequest;
    logic 	tb_start_calc;
@@ -166,8 +169,6 @@ module tb_avalon_interface ();
 		integer stati;
 		integer count;
 		logic [31:0] file_data;
-
-
 		@(posedge tb_clk);
 		tb_address = addr;
 		tb_write = 1'b1;
@@ -175,7 +176,6 @@ module tb_avalon_interface ();
 		tb_beginbursttransfer= 1'b1;
 		tb_burstcount = 11'd392;
 		//@(negedge tb_waitrequest)
-
 		weight_file = $fopen("test.txt","r");
 
 		for (int i = 0; i <= 391; i++) begin
@@ -194,7 +194,41 @@ module tb_avalon_interface ();
 				$info("burst good");
 		end
 		tb_write = 1'b0;
+	end
+	endtask
 
+
+		// perform a burst write of the weights, checking the data is being written correctly
+	task burst_write_pixels(input logic [12:0] addr);
+	begin
+		integer stati;
+		integer count;
+		logic [31:0] file_data;
+		@(posedge tb_clk);
+		tb_address = addr;
+		tb_write = 1'b1;
+		tb_read = 1'b0;
+		tb_beginbursttransfer= 1'b1;
+		tb_burstcount = 11'd196;
+		//@(negedge tb_waitrequest)
+		weight_file = $fopen("image2.txt","r");
+
+		for (int i = 0; i <=195 ; i++) begin
+			stati = $fscanf(weight_file,"%d\n%d\n%d\n%d\n",file_data[7:0],file_data[15:8],file_data[23:16],file_data[31:24]);
+			$display("%h",file_data);
+			tb_writedata = file_data;
+			@(negedge tb_waitrequest);
+			@(posedge tb_clk);
+			tb_beginbursttransfer = 1'b0;
+			tb_burstcount = 'b0;
+			tb_address = 'b0;
+			if(file_data != {tb_pixel_data2, tb_pixel_data1} || tb_w_enable_pixels != 1'b1) begin
+				$error("data burst failed");
+			end
+			else
+				$info("burst good");
+		end
+		tb_write = 1'b0;
 	end
 	endtask
 
@@ -238,7 +272,8 @@ module tb_avalon_interface ();
     	// Burst Write, checks for matching data
 		//burst_write(11'h000,data);
 
-		burst_write_weights(13'd196);
+		// burst_write_weights(13'd588);
+		burst_write_pixels(13'd0);
 
 		// try to read an invalid address
 		read(13'd5000);
@@ -269,9 +304,7 @@ module tb_avalon_interface ();
 		if(tb_readdata != 31'd1) begin
 			$error("status not set correctly");
 		end
-		tmp_weights1 = -15539;
-		tmp_weights2 = -20;
-		tb_writedata = {tmp_weights2,tmp_weights1};
+
 
 		$fclose(weight_file);
 
