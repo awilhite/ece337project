@@ -33,7 +33,7 @@ module tb_avalon_interface ();
    logic [12:0] tb_address;
    logic [31:0] tb_writedata;
    logic [31:0] tb_readdata;
-   logic [16:0] tb_result_output;
+   logic [15:0] tb_result_output;
    logic 	tb_done_calc;
    logic 	tb_overflow;
    logic [11:0] tb_weight_address;

@@ -16,7 +16,7 @@ module avalon_interface (
 	input logic [12:0] address,
 	input logic [31:0] writedata,
 	output logic [31:0] readdata,
-	input logic [16:0] result_output,
+	input logic [15:0] result_output,
 	input logic done_calc,
 	input logic overflow,
 	output logic [11:0] weight_address,

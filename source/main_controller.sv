@@ -43,6 +43,7 @@ module main_controller
 	case(state)
 	  IDLE:
 	    begin
+	    	done_calc = 1'b1;
 	       if(start_calc == 1)
 		 begin
 		    nxt_state = START_CALC;

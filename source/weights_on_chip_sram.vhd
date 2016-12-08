@@ -14,7 +14,7 @@ use ieee.numeric_std.all;
 library ECE337_IP;
 use ECE337_IP.all;
 
-entity on_chip_sram_wrapper is
+entity weights_on_chip_sram is
 	generic
 	( -- Generics are the same as parameters in verilog, you set them during portmapping
 		-- with verilog's parameter mapping syntax (google it) or you can simply create a
@@ -53,9 +53,9 @@ entity on_chip_sram_wrapper is
 		read_data			: out	std_logic_vector(((W_DATA_SIZE_WORDS * W_WORD_SIZE_BYTES * 8) - 1) downto 0);
 		write_data		: in	std_logic_vector(((W_DATA_SIZE_WORDS * W_WORD_SIZE_BYTES * 8) - 1) downto 0)
 	);
-end on_chip_sram_wrapper;
+end weights_on_chip_sram;
 
-architecture wrapper of on_chip_sram_wrapper is
+architecture wrapper of weights_on_chip_sram is
 
 	component simple_scale_mem is
 	generic (

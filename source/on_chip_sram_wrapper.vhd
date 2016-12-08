@@ -14,16 +14,16 @@ use ieee.numeric_std.all;
 library ECE337_IP;
 use ECE337_IP.all;
 
-entity pixels_on_chip_sram is
+entity on_chip_sram_wrapper is
 	generic
 	( -- Generics are the same as parameters in verilog, you set them during portmapping
 		-- with verilog's parameter mapping syntax (google it) or you can simply create a
 		-- separate copy of this wrapper for each on-chip sram instance and modify them below.
 
-		W_ADDR_SIZE_BITS  : natural := 10;    -- Address bus size in bits/pins with addresses corresponding to 
+		W_ADDR_SIZE_BITS  : natural := 16;    -- Address bus size in bits/pins with addresses corresponding to 
 																					-- the starting word of the accesss
 		W_WORD_SIZE_BYTES : natural := 1;   	-- Word size of the memory in bytes
-		W_DATA_SIZE_WORDS : natural := 2;   	-- Data bus size in "words"
+		W_DATA_SIZE_WORDS : natural := 1;   	-- Data bus size in "words"
 		W_READ_DELAY      : time    := 5 ns; 	-- Delay/latency per read access (total time between start of supplying address and when the data read from memory appears on the r_data port)
 																					-- Keep the 5 ns delay for 0.5u on-chip SRAM
 		W_WRITE_DELAY     : time    := 5 ns 	-- Delay/latency per write access (total time between start of supplying address and when the w_data value is written into memory)
@@ -53,9 +53,9 @@ entity pixels_on_chip_sram is
 		read_data			: out	std_logic_vector(((W_DATA_SIZE_WORDS * W_WORD_SIZE_BYTES * 8) - 1) downto 0);
 		write_data		: in	std_logic_vector(((W_DATA_SIZE_WORDS * W_WORD_SIZE_BYTES * 8) - 1) downto 0)
 	);
-end pixels_on_chip_sram;
+end on_chip_sram_wrapper;
 
-architecture wrapper of pixels_on_chip_sram is
+architecture wrapper of on_chip_sram_wrapper is
 
 	component simple_scale_mem is
 	generic (

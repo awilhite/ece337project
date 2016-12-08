@@ -7,7 +7,7 @@
 // Description: Top level module
 
 
-module neural_network (
+module neural_network_sram (
 	input logic clk,    // Clock
 	input logic reset_n,
 	input logic write,
@@ -20,7 +20,7 @@ module neural_network (
 	output logic readdatavalid,
 	//output logic writeresponsevalid,
 	output logic waitrequest,
-	output logic [1:0] response
+	output logic [1:0] response,
 
 	output logic [9:0] pixel_address1,
 	output logic [9:0] pixel_address2,
@@ -30,6 +30,7 @@ module neural_network (
 	output logic [31:0] weight_data,
 	output logic w_enable_pixels,
 	output logic w_enable_weights,
+	output logic r_enable,
 
 
 	input logic [15:0] pixel_value1,
@@ -43,8 +44,6 @@ module neural_network (
 	logic [16:0] result_output;
 	logic [11:0] weight_address_ava, weight_address_mul;
 	logic [9:0] pixel_address1_ava, pixel_address2_ava, pixel_address_mul;
-	logic w_enable_weights;
-	logic w_enable_pixels;
 	logic [15:0] store_data;
 	logic [3:0] output_address;
 	logic start_calc;
@@ -52,8 +51,8 @@ module neural_network (
 	logic [3:0] row_select;
 	logic begin_mult;
 	
-	logic [31:0] weight_value;
 	logic done_row;
+
 	logic [15:0] row_result;
 	logic overflow;
 	logic w_result_ena;
@@ -62,15 +61,17 @@ module neural_network (
 	logic [3:0] in_sel;
 	logic clear_data;
 	logic [15:0] out_data;
+	logic [15:0] pixel_value;
 
 	assign weight_address = done_calc ? weight_address_ava : weight_address_mul;
 	assign pixel_address1 = done_calc ? pixel_address1_ava : pixel_address_mul;
 	assign pixel_address2 = done_calc ? pixel_address2_ava : pixel_address_mul;
-	assign pixel_value = (pixel_address_mul[0] = 0) ? pixel_value1 : pixel_value2;
+	assign pixel_value = (pixel_address_mul[0] == 0) ? pixel_value1 : pixel_value2;
+	assign r_enable = !done_calc;
 
 	avalon_interface avalon_interface_inst(
 		.clk(clk),
-		.n_rst(n_rst),
+		.n_rst(reset_n),
 		.write(write),
 		.read(read),
 		.beginbursttransfer(beginbursttransfer),
@@ -78,7 +79,7 @@ module neural_network (
 		.address(address),
 		.writedata(writedata),
 		.readdata(readdata),
-		.result_output(result_output),
+		.result_output(out_data),
 		.done_calc(done_calc),
 		.overflow(overflow),
 		.weight_address(weight_address_ava),
@@ -102,7 +103,7 @@ module neural_network (
 	multiplier multiplier_inst
 	(
 		.clk(clk),
-		.n_rst(n_rst),
+		.n_rst(reset_n),
 		.row_select(row_select),
 		.begin_mult(begin_mult),
 		.pixel_value(pixel_value),
@@ -118,19 +119,19 @@ module neural_network (
 	main_controller main_controller_inst
 	(
 		.clk(clk),
-		.n_reset(n_rst),
+		.n_reset(reset_n),
 		.start_calc(start_calc),
 		.done_row(done_row),
-		.res_add(res_add),
+		.res_add(row_select),
 		.begin_mult(begin_mult),
 		.done_calc(done_calc)
 	);
    
    result_registers result_registers_inst (
 		.clk(clk),    // Clock
-		.n_rst(n_rst),  // Asynchronous reset active low
-		.out_sel(out_sel),
-		.in_sel(in_sel),
+		.n_rst(reset_n),  // Asynchronous reset active low
+		.out_sel(output_address),
+		.in_sel(row_select),
 		.w_enable(w_result_ena),
 		.clear_data(clear_data),
 		.in_data(row_result),

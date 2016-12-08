@@ -35,6 +35,7 @@ module tb_neural_network_sram (
 	reg tb_verbose;		// Active high enable for more verbose debuging information
 	
 
+	logic tb_clk;
 
 
 	// Clock generation block
@@ -45,7 +46,6 @@ module tb_neural_network_sram (
 		tb_clk = 1'b1;
 		#(CLK_PERIOD/2.0);
 	end
-	logic tb_clk;
 	logic tb_n_rst;
 	logic tb_write;
 	logic tb_read;
@@ -58,7 +58,7 @@ module tb_neural_network_sram (
 	logic tb_readdatavalid;
 	// logic tb_writeresponsevalid;
 	logic [1:0] tb_response;
-
+	logic read_enable;
 	logic [11:0] tb_weight_address;
 	logic [9:0] tb_pixel_address1;
 	logic [9:0] tb_pixel_address2;
@@ -70,12 +70,12 @@ module tb_neural_network_sram (
 
 	logic [15:0] tb_pixel_value1;
 	logic [15:0] tb_pixel_value2;
-	logic [32:0] tb_weight_value;
+	logic [31:0] tb_weight_value;
 
 
 	neural_network_sram DUT(
 		.clk(tb_clk),
-		.n_rst(tb_n_rst),
+		.reset_n(tb_n_rst),
 		.write(tb_write),
 		.read(tb_read),
 		.beginbursttransfer(tb_beginbursttransfer),
@@ -89,9 +89,10 @@ module tb_neural_network_sram (
 		//.writeresponsevalid(tb_writeresponsevalid),
 
 		.weight_address(tb_weight_address),
-		.weight_value(tb_weight_value)
+		.weight_value(tb_weight_value),
 		.w_enable_weights(tb_w_enable_weights),
 		.weight_data(tb_weight_data),
+		.r_enable(read_enable),
 
 		.pixel_address1(tb_pixel_address1),
 		.pixel_address2(tb_pixel_address2),
@@ -99,7 +100,7 @@ module tb_neural_network_sram (
 		.pixel_data1(tb_pixel_data1),
 		.pixel_data2(tb_pixel_data2),
 		.pixel_value1(tb_pixel_value1),
-		.pixel_value2(tb_pixel_value2),
+		.pixel_value2(tb_pixel_value2)
 		);
 
 	weights_on_chip_sram weights_sram
@@ -114,7 +115,7 @@ module tb_neural_network_sram (
 		.start_address(tb_start_address),
 		.last_address(tb_last_address),
 		// Memory interface signals
-		.read_enable(1'b1),
+		.read_enable(read_enable),
 		.write_enable(tb_w_enable_weights),
 		.address(tb_weight_address),
 		.read_data(tb_weight_value),
@@ -133,7 +134,7 @@ module tb_neural_network_sram (
 		.start_address(tb_start_address),
 		.last_address(tb_last_address),
 		// Memory interface signals
-		.read_enable(1'b1),
+		.read_enable(read_enable),
 		.write_enable(tb_w_enable_pixels),
 		.address(tb_pixel_address1),
 		.read_data(tb_pixel_value1),
@@ -153,7 +154,7 @@ module tb_neural_network_sram (
 		.start_address(tb_start_address),
 		.last_address(tb_last_address),
 		// Memory interface signals
-		.read_enable(1'b1),
+		.read_enable(read_enable),
 		.write_enable(tb_w_enable_pixels),
 		.address(tb_pixel_address2),
 		.read_data(tb_pixel_value2),
@@ -161,4 +162,197 @@ module tb_neural_network_sram (
 	);
 
 
+
+
+
+	// reset
+	task reset_dut;
+	begin
+		tb_n_rst = 1'b0;
+		@(posedge tb_clk);
+		@(posedge tb_clk);
+		tb_n_rst = 1'b1;
+		@(posedge tb_clk);
+		@(posedge tb_clk);
+	end
+	endtask : reset_dut
+
+	// simple avalon read
+	task read(input logic [12:0] addr);
+	begin
+		@(posedge tb_clk);
+		tb_address = addr;
+		tb_read = 1'b1;
+		tb_write = 1'b0;
+		@(negedge tb_waitrequest);
+
+		if(tb_response == 'b0) begin
+			@(posedge tb_readdatavalid);
+		end
+		tb_address = '0;
+		tb_read = 1'b0;
+
+
+
+	end
+	endtask
+
+	// simple avalon write
+	task write(input logic [12:0] addr, input logic [31:0] data);
+	begin
+		@(posedge tb_clk);
+		tb_address = addr;
+		tb_writedata = data;
+		tb_write = 1'b1;
+		tb_read = 1'b0;
+		@(negedge tb_waitrequest);
+		//#(CLK_PERIOD);
+		@(posedge tb_clk);
+		tb_address = 'b0;
+		tb_write = 1'b0;
+		tb_writedata = 'b0;
+
+
+	end
+	endtask
+
+	// perform a burst write, checking the data is being written correctly
+	task burst_write(input logic [12:0] addr, input logic [31:0] data[0:195]);
+	begin
+		@(posedge tb_clk);
+		tb_address = addr;
+		tb_write = 1'b1;
+		tb_read = 1'b0;
+		tb_beginbursttransfer= 1'b1;
+		tb_burstcount = 11'd196;
+		@(negedge tb_waitrequest)
+		for (int i = 0; i <= 195; i++) begin
+			tb_writedata = data[i];
+			@(negedge tb_waitrequest);
+			@(posedge tb_clk);
+			tb_beginbursttransfer = 1'b0;
+			tb_burstcount = 'b0;
+			tb_address = 'b0;
+			if(data[i] != {tb_pixel_data2,tb_pixel_data1} || tb_w_enable_pixels != 1'b1 || tb_pixel_address1 != i) begin
+				$error("data burst failed");
+			end
+			else
+				$info("burst good");
+
+		end
+		tb_write = 1'b0;
+	end
+	endtask
+
+
+	// perform a burst write of the weights, checking the data is being written correctly
+	task burst_write_weights(input logic [12:0] addr);
+	begin
+		integer stati;
+		integer count;
+		logic [31:0] file_data;
+		@(posedge tb_clk);
+		tb_address = addr;
+		tb_write = 1'b1;
+		tb_read = 1'b0;
+		tb_beginbursttransfer= 1'b1;
+		tb_burstcount = 11'd392;
+		//@(negedge tb_waitrequest)
+
+		for (int i = 0; i <= 391; i++) begin
+			stati = $fscanf(weight_file,"%h   %h   ",file_data[31:16],file_data[15:0]);
+			tb_writedata = file_data;
+			@(negedge tb_waitrequest);
+			@(posedge tb_clk);
+			tb_beginbursttransfer = 1'b0;
+			tb_burstcount = 'b0;
+			tb_address = 'b0;
+			// if(file_data != tb_weight_data || tb_w_enable_weights != 1'b1) begin//|| tb_weight_address != i) begin
+			// 	$error("data burst failed");
+			// end
+			// else
+			// 	$info("burst good");
+		end
+		tb_write = 1'b0;
+	end
+	endtask
+
+
+		// perform a burst write of the weights, checking the data is being written correctly
+	task burst_write_pixels(input logic [12:0] addr);
+	begin
+		integer stati;
+		integer count,pixel_file;
+		logic [31:0] file_data;
+		@(posedge tb_clk);
+		tb_address = addr;
+		tb_write = 1'b1;
+		tb_read = 1'b0;
+		tb_beginbursttransfer= 1'b1;
+		tb_burstcount = 11'd196;
+		//@(negedge tb_waitrequest)
+		pixel_file = $fopen("image2.txt","r");
+
+		for (int i = 0; i <=195 ; i++) begin
+			stati = $fscanf(pixel_file,"%d\n%d\n%d\n%d\n",file_data[7:0],file_data[15:8],file_data[23:16],file_data[31:24]);
+			tb_writedata = file_data;
+			@(negedge tb_waitrequest);
+			@(posedge tb_clk);
+			tb_beginbursttransfer = 1'b0;
+			tb_burstcount = 'b0;
+			tb_address = 'b0;
+			// if(file_data != {tb_pixel_data2, tb_pixel_data1} || tb_w_enable_pixels != 1'b1) begin
+			// 	$error("data burst failed");
+			// end
+			// else
+			// 	$info("burst good");
+		end
+		tb_write = 1'b0;
+	end
+	endtask
+
+	logic [31:0] expected_val = 32'h0000000F;
+	logic [31:0]data[0:195];
+	logic [31:0] file_data;
+	integer weight_file;
+
+
+
+initial begin 
+	// Initialize all test bench control signals and DUT inputs
+	tb_mem_clr					<= 0;
+	tb_mem_init					<= 0;
+	tb_mem_dump					<= 0;
+	tb_verbose					<= 0;
+	tb_init_file_number	<= 0;
+	tb_dump_file_number	<= 0;
+	tb_start_address		<= 0;
+	tb_last_address			<= 0;
+
+	tb_beginbursttransfer = 'b0;
+	tb_burstcount = 'b0;
+	tb_read = 1'b0;
+	tb_write = 1'b0;
+
+	// Initialization of memory's interface input signals
+	
+
+	reset_dut();
+
+	weight_file = $fopen("test.txt","r");
+	for (int i = 0; i < 10; i++) begin
+		burst_write_weights(((392 * i) + 196));
+		$fgetc(weight_file);
+		#(CLK_PERIOD * 4);
+	end
+
+
+	burst_write_pixels(13'd0);
+
+	#(CLK_PERIOD *4);
+
+	write(CONTROL_REG,31'b1000);
+
+
+end
 endmodule

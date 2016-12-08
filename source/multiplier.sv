@@ -177,7 +177,7 @@ counter
 (
 	.clk(clk), 
 	.n_rst(n_rst), 
-	.clear(begin_mult),
+	.clear(row_complete),
 	.count_enable(count_enable), 
 	.rollover_val(10'd392),
 	.count_out(count), 			// out
