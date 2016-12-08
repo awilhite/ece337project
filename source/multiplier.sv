@@ -18,7 +18,7 @@ module multiplier
 	output wire [9:0] pixel_address,
 	output wire [11:0] weight_address,
 	output wire done_row,
-	output wire [15:0] row_result,
+	output wire [31:0] row_result,
 	output wire overflow,
 	output wire w_result_ena
 );
@@ -33,18 +33,18 @@ logic rollover_flag;
 logic write_enable;
 logic next_w_ena;
 
-logic [16:0] result;
-logic [16:0] next_result;
+logic [32:0] result;
+logic [32:0] next_result;
 logic [9:0] count;
 
-logic [15:0] product_1;
-logic [15:0] product_2;
+logic [31:0] product_1;
+logic [31:0] product_2;
 
 logic [9:0] pixel_addr;
 logic [11:0] weight_addr;
 
-assign row_result = result[15:0];
-assign overflow = (result[16:15] == 2'b01) || (result[16:15] == 2'b10);
+assign row_result = result[31:0];
+assign overflow = (result[32:31] == 2'b01) || (result[32:31] == 2'b10);
 assign done_row = row_complete;
 assign pixel_address = pixel_addr;
 assign weight_address = weight_addr;
@@ -93,6 +93,7 @@ always_comb begin
 		// IDLE
 
 		idle: begin
+			next_w_ena = 1'b0;
 			if (begin_mult) begin
 				next_state = setup;
 			end
@@ -156,7 +157,7 @@ always_comb begin
 			next_result = result + product_1 + product_2;
 
 			if (!rollover_flag) begin
-				pixel_addr = PIXEL_ADDR_START + count;
+				pixel_addr = (PIXEL_ADDR_START + count) >> 1;
 				weight_addr = WEIGHT_ADDR_START + (row_select * 10'd392) + count;
 			end
 		end

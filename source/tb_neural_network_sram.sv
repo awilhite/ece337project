@@ -314,8 +314,7 @@ module tb_neural_network_sram (
 	logic [31:0] expected_val = 32'h0000000F;
 	logic [31:0]data[0:195];
 	logic [31:0] file_data;
-	integer weight_file;
-
+	integer weight_file, tmp;
 
 
 initial begin 
@@ -342,17 +341,45 @@ initial begin
 	weight_file = $fopen("test.txt","r");
 	for (int i = 0; i < 10; i++) begin
 		burst_write_weights(((392 * i) + 196));
-		$fgetc(weight_file);
+		tmp = $fgetc(weight_file);
 		#(CLK_PERIOD * 4);
 	end
 
 
 	burst_write_pixels(13'd0);
 
+
+	// start computation
 	#(CLK_PERIOD *4);
 
 	write(CONTROL_REG,31'b1000);
 
+	#(CLK_PERIOD * 4);
 
+	write(CONTROL_REG,31'b0000);
+
+	#(CLK_PERIOD * 4);
+	read(STATUS_REG);
+
+	// waid for computation
+	while(tb_readdata != 13'b01) begin
+		#(CLK_PERIOD * 4);
+		read(STATUS_REG);
+	end
+
+	// read result
+	read(13'd4122);
+
+
+	// Data clear operation
+	write(CONTROL_REG,13'b1);
+	#(CLK_PERIOD * 2);
+	write(CONTROL_REG, 13'b0);
+	#(CLK_PERIOD);
+	read(13'd4124);
+
+
+	#(CLK_PERIOD);
+	read(13'd5000);
 end
 endmodule

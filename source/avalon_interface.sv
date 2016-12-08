@@ -16,7 +16,7 @@ module avalon_interface (
 	input logic [12:0] address,
 	input logic [31:0] writedata,
 	output logic [31:0] readdata,
-	input logic [15:0] result_output,
+	input logic [31:0] result_output,
 	input logic done_calc,
 	input logic overflow,
 	output logic [11:0] weight_address,
@@ -116,7 +116,7 @@ always_comb begin
 	else begin 
 		if(int_addr <= PIXEL_ADDR_MAX) begin
 			pixel_address1 = int_addr[9:0];
-			pixel_address2 = int_addr[9:0] + 1;
+			pixel_address2 = int_addr[9:0];
 			w_enable_pixels = 1'b1;
 			pixel_data1 = writedata[15:0];
 			pixel_data2 = writedata[31:16];

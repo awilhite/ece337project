@@ -43,7 +43,7 @@ module neural_network_sram (
 	logic done_calc;
 	logic [16:0] result_output;
 	logic [11:0] weight_address_ava, weight_address_mul;
-	logic [9:0] pixel_address1_ava, pixel_address2_ava, pixel_address_mul;
+	logic [9:0] pixel_address1_ava, pixel_address2_ava, pixel_address_mul, pix_mul_out;
 	logic [15:0] store_data;
 	logic [3:0] output_address;
 	logic start_calc;
@@ -53,20 +53,24 @@ module neural_network_sram (
 	
 	logic done_row;
 
-	logic [15:0] row_result;
+	logic [31:0] row_result;
 	logic overflow;
 	logic w_result_ena;
 
 	logic [3:0] out_sel;
 	logic [3:0] in_sel;
 	logic clear_data;
-	logic [15:0] out_data;
-	logic [15:0] pixel_value;
+	logic [31:0] out_data;
+	logic [15:0] pixel_value; 
 
 	assign weight_address = done_calc ? weight_address_ava : weight_address_mul;
 	assign pixel_address1 = done_calc ? pixel_address1_ava : pixel_address_mul;
 	assign pixel_address2 = done_calc ? pixel_address2_ava : pixel_address_mul;
+
+	assign pix_mul_out = (pixel_address_mul[0] == 0) ? pixel_address_mul: pixel_address_mul - 1;
+
 	assign pixel_value = (pixel_address_mul[0] == 0) ? pixel_value1 : pixel_value2;
+
 	assign r_enable = !done_calc;
 
 	avalon_interface avalon_interface_inst(

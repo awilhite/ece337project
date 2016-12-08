@@ -14,11 +14,11 @@ module result_registers (
 	input [3:0] in_sel,
 	input w_enable,
 	input clear_data,
-	input [15:0] in_data,
-	output [15:0] out_data
+	input [31:0] in_data,
+	output [31:0] out_data
 );
 
-	logic [15:0] regs [10:0];
+	logic [31:0] regs [10:0];
 
 	always_ff @(posedge clk or negedge n_rst) begin : proc_regs
 		if(~n_rst) begin
