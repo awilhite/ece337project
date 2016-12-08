@@ -13,19 +13,19 @@ module pixel_memory_sel
 	input wire [9:0] address_a_2,
 	input wire [9:0] address_b,
 	input wire select,
-	input wire [7:0] data_a,
-	input wire [7:0] data_b,
+	input wire [15:0] data_a,
+	input wire [15:0] data_b,
 	input wire wren_a,
 	input wire wren_b,
-	output wire [7:0] q_a,
-	output wire [7:0] q_b
+	output wire [15:0] q_a,
+	output wire [15:0] q_b
 );
 
 wire address_a;
 
 assign address_a = select ? address_a_2 : address_a_1;
 
-pixel_memory_inst pmi(
+pixel_mem_16bit pixel_mem_inst(
 	.address_a(address_a),
 	.address_b(address_b),
 	.clock(clk),
