@@ -38,13 +38,13 @@ typedef enum logic [4:0]
 	logic count_ena, clear_cnt, done_burst;
 	logic [9:0] cnt;
 
-
+	// counter to keep track of bursts
 	flex_counter #(10) burstcounter(clk,n_rst,clear_cnt,count_ena,rollover,cnt,done_burst);
 
 
 	parameter MAXADDR = 13'd4128;
 
-
+	// update state and other registers
 	always_ff@(posedge clk, negedge n_rst)
 	begin
 		  if(n_rst == 0)begin
@@ -59,7 +59,7 @@ typedef enum logic [4:0]
 		  end
 	end
 
-
+	// next state logic
 	always_comb
 	begin
 		next_state = state;
@@ -136,6 +136,8 @@ typedef enum logic [4:0]
 		endcase // state
 	end
 
+
+	// output logic
 	always_comb begin
 		end_wait = 0;
 		response = 2'b00;
