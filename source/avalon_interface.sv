@@ -122,7 +122,7 @@ always_comb begin
 			pixel_data2 = writedata[31:16];
 		end 
 		else if(int_addr <= WEIGHT_ADDR_MAX) begin
-			temp_addr = int_addr - PIXEL_ADDR_MAX;
+			temp_addr = int_addr - PIXEL_ADDR_MAX - 1;
 			weight_address = temp_addr[11:0];
 			w_enable_weights = 1'b1;
 			weight_data = writedata;

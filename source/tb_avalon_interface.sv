@@ -12,8 +12,9 @@ module tb_avalon_interface ();
 	localparam CLK_PERIOD = 20;
 	localparam CONTROL_REG = 13'd4126;
 	localparam STATUS_REG = 13'd4127;
-	reg tb_clk;
 
+	reg tb_clk;
+	integer weight_file;
 
 	// Clock generation block
 	always
@@ -160,15 +161,54 @@ module tb_avalon_interface ();
 
 		end
 		tb_write = 1'b0;
+	end
+	endtask
 
+
+	// perform a burst write of the weights, checking the data is being written correctly
+	task burst_write_weights(input logic [12:0] addr);
+	begin
+		integer stati;
+		integer count;
+		logic [31:0] file_data;
+
+
+		@(posedge tb_clk);
+		tb_address = addr;
+		tb_write = 1'b1;
+		tb_read = 1'b0;
+		tb_beginbursttransfer= 1'b1;
+		tb_burstcount = 11'd392;
+		//@(negedge tb_waitrequest)
+
+		weight_file = $fopen("test.txt","r");
+
+		for (int i = 0; i <= 391; i++) begin
+			stati = $fscanf(weight_file,"%h   %h   ",file_data[31:16],file_data[15:0]);
+			$display("%h",file_data);
+			tb_writedata = file_data;
+			@(negedge tb_waitrequest);
+			@(posedge tb_clk);
+			tb_beginbursttransfer = 1'b0;
+			tb_burstcount = 'b0;
+			tb_address = 'b0;
+			if(file_data != tb_weight_data || tb_w_enable_weights != 1'b1) begin//|| tb_weight_address != i) begin
+				$error("data burst failed");
+			end
+			else
+				$info("burst good");
+		end
+		tb_write = 1'b0;
 
 	end
 	endtask
 
 	logic [31:0] expected_val = 32'h0000000F;
 	logic [31:0]data[0:195];
-
+	logic [31:0] file_data;
 	initial begin
+
+
 
 		// set initial input signals
 		tb_beginbursttransfer = 'b0;
@@ -201,7 +241,9 @@ module tb_avalon_interface ();
 		for (int i=0;i<=195;i=i+1)
     		data[i] = 2*i;
     	// Burst Write, checks for matching data
-		burst_write(11'h000,data);
+		//burst_write(11'h000,data);
+
+		burst_write_weights(13'd196);
 
 		// try to read an invalid address
 		read(13'd5000);
@@ -235,6 +277,8 @@ module tb_avalon_interface ();
 		tmp_weights1 = -15539;
 		tmp_weights2 = -20;
 		tb_writedata = {tmp_weights2,tmp_weights1};
+
+		$fclose(weight_file);
 
 	end 
 

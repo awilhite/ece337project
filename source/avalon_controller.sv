@@ -185,14 +185,14 @@ typedef enum logic [4:0]
 			end
 
 			burst_begin:begin 
-				next_address = address + cnt;
+				next_address = address;
 				next_rollover = burstcount + 1;
 				count_ena = 1'b1; 
 			end
 
 			burst_write:begin 
 				end_wait = 1'b1;
-				next_address = address + cnt;
+				next_address = output_address + 1;
 				data = writedata;
 				w_ena = 1'b1;
 				count_ena = 1'b1; 
