@@ -93,7 +93,7 @@ module neural_network (
 
 	main_controller main_controller_inst
 	(
--		.clk(clk),
+		.clk(clk),
 		.n_reset(n_rst),
 		.start_calc(start_calc),
 		.done_row(done_row),

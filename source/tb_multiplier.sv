@@ -36,7 +36,7 @@ module tb_multiplier();
 	logic [9:0] tb_pixel_address;
 	logic [11:0] tb_weight_address;
 	logic tb_done_row;
-	logic [15:0] tb_row_result;
+	logic [31:0] tb_row_result;
 	logic tb_overflow;
 	logic tb_w_result_ena;
 
@@ -168,7 +168,7 @@ module tb_multiplier();
 
 		delay_cycles(10);
 
-		// Test Case 3: 
+		/*// Test Case 3: 
 		// Expected Result: 
 		// Signed Number
 
@@ -186,24 +186,17 @@ module tb_multiplier();
 
 		delay_cycles(20);
 
-		@(posedge tb_done_row);
-
-		if (tb_row_result == tb_expected_val) begin
-			$info("Result Computed Correctly");
-		end
-		else begin
-			$error("Result Incorrect");
-		end
+		@(posedge tb_done_row);*/
 
 		delay_cycles(10);
 
 		// Test Case 4: Expected Result 392
 		// Overflow condition
 
-		tb_pixel_value_1 = 8'h01;
-		tb_pixel_value_2 = 8'h01;
-		tb_weight_value_1 = 16'd168;
-		tb_weight_value_2 = 16'h0000;
+		tb_pixel_value_1 = 8'hF0;
+		tb_pixel_value_2 = 8'h00;
+		tb_weight_value_1 = 16'hFFFFF;
+		tb_weight_value_2 = 16'hFFFFF;
 
 		tb_row_select = 1;
 
