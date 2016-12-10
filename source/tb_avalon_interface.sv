@@ -211,7 +211,7 @@ module tb_avalon_interface ();
 		tb_beginbursttransfer= 1'b1;
 		tb_burstcount = 11'd196;
 		//@(negedge tb_waitrequest)
-		weight_file = $fopen("image2.txt","r");
+		weight_file = $fopen("image6.txt","r");
 
 		for (int i = 0; i <=195 ; i++) begin
 			stati = $fscanf(weight_file,"%d\n%d\n%d\n%d\n",file_data[7:0],file_data[15:8],file_data[23:16],file_data[31:24]);

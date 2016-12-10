@@ -103,6 +103,9 @@ module tb_neural_network_sram (
 		.pixel_value2(tb_pixel_value2)
 		);
 
+
+	logic [13:0] weights_addr_sram;
+	assign weights_addr_sram = tb_weight_address * 3'd4;
 	weights_on_chip_sram weights_sram
 	(
 		// Test bench control signals
@@ -117,11 +120,12 @@ module tb_neural_network_sram (
 		// Memory interface signals
 		.read_enable(read_enable),
 		.write_enable(tb_w_enable_weights),
-		.address(tb_weight_address),
+		.address(weights_addr_sram),
 		.read_data(tb_weight_value),
 		.write_data(tb_weight_data)
 	);
-
+	logic [9:0] pixel1_addr_sram;
+	assign pixel1_addr_sram = tb_pixel_address1 * 2;
 	pixels_on_chip_sram pixels1_sram
 	(
 		// Test bench control signals
@@ -136,11 +140,13 @@ module tb_neural_network_sram (
 		// Memory interface signals
 		.read_enable(read_enable),
 		.write_enable(tb_w_enable_pixels),
-		.address(tb_pixel_address1),
+		.address(pixel1_addr_sram),
 		.read_data(tb_pixel_value1),
 		.write_data(tb_pixel_data1)
 	);
 
+	logic [9:0] pixel2_addr_sram;
+	assign pixel2_addr_sram = tb_pixel_address2 * 2;
 
 	pixels_on_chip_sram pixels2_sram
 	(
@@ -156,7 +162,7 @@ module tb_neural_network_sram (
 		// Memory interface signals
 		.read_enable(read_enable),
 		.write_enable(tb_w_enable_pixels),
-		.address(tb_pixel_address2),
+		.address(pixel2_addr_sram),
 		.read_data(tb_pixel_value2),
 		.write_data(tb_pixel_data2)
 	);

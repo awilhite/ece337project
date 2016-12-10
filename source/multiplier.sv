@@ -23,8 +23,8 @@ module multiplier
 	output wire w_result_ena
 );
 
-parameter PIXEL_ADDR_START = 8'h00;
-parameter WEIGHT_ADDR_START = 8'h00;
+parameter PIXEL_ADDR_START = 10'h000;
+parameter WEIGHT_ADDR_START = 12'h00;
 
 logic count_enable;
 logic row_complete;
@@ -151,13 +151,13 @@ always_comb begin
 		end
 
 		mult: begin
-			product_1 = pixel_value[15:8] * weight_value[31:16];
-			product_2 = pixel_value[7:0] * weight_value[15:0];
+			product_1 = $signed({8'b0,pixel_value[15:8]}) * $signed(weight_value[31:16]);
+			product_2 = $signed({8'b0,pixel_value[7:0]}) * $signed(weight_value[15:0]);
 
 			next_result = result + product_1 + product_2;
 
 			if (!rollover_flag) begin
-				pixel_addr = (PIXEL_ADDR_START + count) >> 1;
+				pixel_addr = (PIXEL_ADDR_START + count);
 				weight_addr = WEIGHT_ADDR_START + (row_select * 10'd392) + count;
 			end
 		end

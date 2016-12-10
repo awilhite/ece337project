@@ -20,7 +20,7 @@ entity weights_on_chip_sram is
 		-- with verilog's parameter mapping syntax (google it) or you can simply create a
 		-- separate copy of this wrapper for each on-chip sram instance and modify them below.
 
-		W_ADDR_SIZE_BITS  : natural := 12;    -- Address bus size in bits/pins with addresses corresponding to 
+		W_ADDR_SIZE_BITS  : natural := 14;    -- Address bus size in bits/pins with addresses corresponding to 
 																					-- the starting word of the accesss
 		W_WORD_SIZE_BYTES : natural := 1;   	-- Word size of the memory in bytes
 		W_DATA_SIZE_WORDS : natural := 4;   	-- Data bus size in "words"
@@ -60,10 +60,10 @@ architecture wrapper of weights_on_chip_sram is
 	component simple_scale_mem is
 	generic (
 						-- Memory Model parameters
-						ADDR_SIZE_BITS	: natural	:= 12;		-- Address bus size in bits/pins with addresses corresponding to 
+						ADDR_SIZE_BITS	: natural	:= 14;		-- Address bus size in bits/pins with addresses corresponding to 
 																								-- the starting word of the accesss
 						WORD_SIZE_BYTES	: natural	:= 1;			-- Word size of the memory in bytes
-						DATA_SIZE_WORDS	: natural	:= 1;			-- Data bus size in "words"
+						DATA_SIZE_WORDS	: natural	:= 4;			-- Data bus size in "words"
 						READ_DELAY			: time		:= 5 ns;	-- Delay/latency per read access
 						WRITE_DELAY			: time		:= 5 ns		-- Delay/latency per write access
 					);

@@ -64,10 +64,10 @@ module neural_network_sram (
 	logic [15:0] pixel_value; 
 
 	assign weight_address = done_calc ? weight_address_ava : weight_address_mul;
-	assign pixel_address1 = done_calc ? pixel_address1_ava : pixel_address_mul;
-	assign pixel_address2 = done_calc ? pixel_address2_ava : pixel_address_mul;
+	assign pixel_address1 = done_calc ? pixel_address1_ava : pixel_address_mul >> 1;
+	assign pixel_address2 = done_calc ? pixel_address2_ava : pixel_address_mul >> 1;
 
-	assign pix_mul_out = (pixel_address_mul[0] == 0) ? pixel_address_mul: pixel_address_mul - 1;
+	// assign pix_mul_out = (pixel_address_mul[0] == 0) ? pixel_address_mul >> 1: pixel_address_mul  >> 1;
 
 	assign pixel_value = (pixel_address_mul[0] == 0) ? pixel_value1 : pixel_value2;
 

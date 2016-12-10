@@ -35,7 +35,7 @@ typedef enum logic [4:0]
 	logic [12:0] next_address;
 	logic [15:0] data;
 	logic [9:0] rollover, next_rollover;
-	logic count_ena, clear_cnt, done_burst;
+	logic count_ena, clear_cnt, done_burst,next_wena;
 	logic [9:0] cnt;
 
 	// counter to keep track of bursts
@@ -51,11 +51,13 @@ typedef enum logic [4:0]
 		      state <= idle;
 		      output_address <= 'b0;
 		      rollover <= 'b0;
+		      w_ena <= 'b0;
 	  end
 		  else begin
 		      state <= next_state;
 		      output_address <= next_address;
 		      rollover <= next_rollover;
+		      w_ena <= next_wena;
 		  end
 	end
 
@@ -145,7 +147,7 @@ typedef enum logic [4:0]
 		next_address = output_address;
 		next_rollover = rollover;
 		readdatavalid = 1'b0;
-		w_ena = 1'b0;
+		next_wena = 1'b0;
 		count_ena = 1'b0;
 		clear_cnt = 1'b0;
 		case(state)
@@ -160,7 +162,7 @@ typedef enum logic [4:0]
 
 			begin_write:begin 
 				next_address = address;
-				w_ena = 1'b1;
+				next_wena = 1'b1;
 				//end_wait = 1'b1;
 			end
 
@@ -177,7 +179,7 @@ typedef enum logic [4:0]
 				writeresponsevalid = 1'b1;
 				response = 2'b00;
 				data = writedata;
-				w_ena = 1'b1;
+				next_wena = 1'b1;
 
 			end
 
@@ -194,7 +196,7 @@ typedef enum logic [4:0]
 				end_wait = 1'b1;
 				next_address = output_address + 1;
 				data = writedata;
-				w_ena = 1'b1;
+				next_wena = 1'b1;
 				count_ena = 1'b1; 
 
 			end
