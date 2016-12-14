@@ -1,6 +1,6 @@
 # Step 1:  Read in the source file
-analyze -format sverilog -lib WORK {flex_counter.sv multiplier.sv}
-elaborate multiplier -lib WORK
+analyze -format sverilog -lib WORK { result_registers.sv}
+elaborate result_registers -lib WORK
 uniquify
 # Step 2: Set design constraints
 # Uncomment below to set timing, area, power, etc. constraints
@@ -13,12 +13,12 @@ uniquify
 compile -map_effort medium
 
 # Step 4: Output reports
-report_timing -path full -delay max -max_paths 1 -nworst 1 > reports/multiplier.rep
-report_area >> reports/multiplier.rep
-report_power -hier >> reports/multiplier.rep
+report_timing -path full -delay max -max_paths 1 -nworst 1 > reports/result_registers.rep
+report_area >> reports/result_registers.rep
+report_power -hier >> reports/result_registers.rep
 
 # Step 5: Output final VHDL and Verilog files
-write_file -format verilog -hierarchy -output "mapped/multiplier.v"
+write_file -format verilog -hierarchy -output "mapped/result_registers.v"
 echo "\nScript Done\n"
 echo "\nChecking Design\n"
 check_design

@@ -33,8 +33,8 @@ module tb_result_registers();
 	logic [3:0] tb_in_sel;
 	logic tb_w_enable;
 	logic tb_clear_data;
-	logic [15:0] tb_in_data;
-	logic [15:0] tb_out_data;
+	logic [31:0] tb_in_data;
+	logic [31:0] tb_out_data;
 
 	// ESTABLISH DUT
 

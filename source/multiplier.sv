@@ -44,7 +44,7 @@ logic [9:0] pixel_addr;
 logic [11:0] weight_addr;
 
 assign row_result = result[31:0];
-assign overflow = result[32];
+assign overflow = (result[32:31] == 2'b01) || (result[32:31] == 2'b10);
 assign done_row = row_complete;
 assign pixel_address = pixel_addr;
 assign weight_address = weight_addr;

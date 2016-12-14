@@ -143,10 +143,10 @@ module tb_multiplier();
 		// Expected Result 392
 		// One of weight values set to zero
 
-		tb_pixel_value_1 = 8'h01;
-		tb_pixel_value_2 = 8'h01;
-		tb_weight_value_1 = 16'h0001;
-		tb_weight_value_2 = 16'h0000;
+		tb_pixel_value_1 = 8'd05;
+		tb_pixel_value_2 = 8'd02;
+		tb_weight_value_1 = 16'd0007;
+		tb_weight_value_2 = 16'd0009;
 
 		tb_row_select = 1;
 
@@ -193,10 +193,10 @@ module tb_multiplier();
 		// Test Case 4: Expected Result 392
 		// Overflow condition
 
-		tb_pixel_value_1 = 8'hF0;
-		tb_pixel_value_2 = 8'h00;
-		tb_weight_value_1 = 16'hFFFFF;
-		tb_weight_value_2 = 16'hFFFFF;
+		tb_pixel_value_1 = 8'hFF;
+		tb_pixel_value_2 = 8'hFF;
+		tb_weight_value_1 = 16'd30000;
+		tb_weight_value_2 = 16'd30000;
 
 		tb_row_select = 1;
 

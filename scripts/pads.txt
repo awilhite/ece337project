@@ -1,0 +1,596 @@
+Orient: R0
+Pad: U1 N
+Orient: R0
+Pad: U2 N
+Orient: R0
+Pad: U3 N
+Orient: R0
+Pad: U4 N
+Orient: R0
+Pad: U5 N
+Orient: R0
+Pad: U6 N
+Orient: R0
+Pad: U7 N
+Orient: R0
+Pad: U8 N
+Orient: R0
+Pad: U9 N
+Orient: R0
+Pad: U10 N
+Orient: R0
+Pad: U11 N
+Orient: R0
+Pad: U12 N
+Orient: R0
+Pad: U13 N
+Orient: R0
+Pad: U14 N
+Orient: R0
+Pad: U15 N
+Orient: R0
+Pad: U16 N
+Orient: R0
+Pad: U17 N
+Orient: R0
+Pad: U18 N
+Orient: R0
+Pad: U19 N
+Orient: R0
+Pad: U20 N
+Orient: R0
+Pad: U21 N
+Orient: R0
+Pad: U22 N
+Orient: R0
+Pad: U23 N
+Orient: R0
+Pad: U24 N
+Orient: R0
+Pad: U25 N
+Orient: R0
+Pad: U26 N
+Orient: R0
+Pad: U27 N
+Orient: R0
+Pad: U28 N
+Orient: R0
+Pad: U29 N
+Orient: R0
+Pad: U30 N
+Orient: R0
+Pad: U31 N
+Orient: R0
+Pad: U32 N
+Orient: R0
+Pad: U33 N
+Orient: R0
+Pad: U34 N
+Orient: R0
+Pad: U35 N
+Orient: R0
+Pad: U36 N
+Orient: R0
+Pad: U37 N
+Orient: R0
+Pad: U38 N
+Orient: R0
+Pad: U39 N
+Orient: R0
+Pad: U40 N
+Orient: R0
+Pad: U41 N
+Orient: R0
+Pad: U42 N
+Orient: R0
+Pad: U43 N
+Orient: R0
+Pad: U44 N
+Orient: R0
+Pad: U45 N
+Orient: R0
+Pad: U46 N
+Orient: R0
+Pad: U47 N
+Orient: R0
+Pad: U48 N
+Orient: R0
+Pad: U49 N
+Orient: R0
+Pad: U50 N
+Orient: R0
+Pad: U51 N
+Orient: R0
+Pad: U52 N
+Orient: R0
+Pad: U53 N
+Orient: R0
+Pad: U54 N
+Orient: R0
+Pad: U55 N
+Orient: R0
+Pad: U56 N
+Orient: R0
+Pad: U57 N
+Orient: R0
+Pad: U58 N
+Orient: R0
+Pad: U59 N
+Orient: R0
+Pad: U60 N
+Orient: R0
+Pad: U61 N
+Orient: R0
+Pad: U62 N
+Orient: R0
+Pad: U63 N
+Orient: R0
+Pad: U64 N
+Orient: R0
+Pad: FN1 N PADNC
+Orient: R0
+Pad: FN2 N PADNC
+Orient: R0
+Pad: FN3 N PADNC
+Orient: R0
+Pad: FN4 N PADNC
+Orient: R0
+Pad: FN5 N PADNC
+Orient: R0
+Pad: FN6 N PADNC
+Orient: R0
+Pad: FN7 N PADNC
+Orient: R0
+Pad: FN8 N PADNC
+Orient: R0
+Pad: FN9 N PADNC
+Orient: R0
+Pad: c00 NW PADFC
+
+Orient: R90
+Pad: U65 W
+Orient: R90
+Pad: U66 W
+Orient: R90
+Pad: U67 W
+Orient: R90
+Pad: U68 W
+Orient: R90
+Pad: U69 W
+Orient: R90
+Pad: U70 W
+Orient: R90
+Pad: U71 W
+Orient: R90
+Pad: U72 W
+Orient: R90
+Pad: U73 W
+Orient: R90
+Pad: U74 W
+Orient: R90
+Pad: U75 W
+Orient: R90
+Pad: U76 W
+Orient: R90
+Pad: U77 W
+Orient: R90
+Pad: U78 W
+Orient: R90
+Pad: U79 W
+Orient: R90
+Pad: U80 W
+Orient: R90
+Pad: U81 W
+Orient: R90
+Pad: U82 W
+Orient: R90
+Pad: U83 W
+Orient: R90
+Pad: U84 W
+Orient: R90
+Pad: U85 W
+Orient: R90
+Pad: U86 W
+Orient: R90
+Pad: U87 W
+Orient: R90
+Pad: U88 W
+Orient: R90
+Pad: U89 W
+Orient: R90
+Pad: U90 W
+Orient: R90
+Pad: U91 W
+Orient: R90
+Pad: U92 W
+Orient: R90
+Pad: U93 W
+Orient: R90
+Pad: U94 W
+Orient: R90
+Pad: U95 W
+Orient: R90
+Pad: U96 W
+Orient: R90
+Pad: U97 W
+Orient: R90
+Pad: U98 W
+Orient: R90
+Pad: U99 W
+Orient: R90
+Pad: U100 W
+Orient: R90
+Pad: U101 W
+Orient: R90
+Pad: U102 W
+Orient: R90
+Pad: U103 W
+Orient: R90
+Pad: U104 W
+Orient: R90
+Pad: U105 W
+Orient: R90
+Pad: U106 W
+Orient: R90
+Pad: U107 W
+Orient: R90
+Pad: U108 W
+Orient: R90
+Pad: U109 W
+Orient: R90
+Pad: U110 W
+Orient: R90
+Pad: U111 W
+Orient: R90
+Pad: U112 W
+Orient: R90
+Pad: U113 W
+Orient: R90
+Pad: U114 W
+Orient: R90
+Pad: U115 W
+Orient: R90
+Pad: U116 W
+Orient: R90
+Pad: U117 W
+Orient: R90
+Pad: U118 W
+Orient: R90
+Pad: U119 W
+Orient: R90
+Pad: U120 W
+Orient: R90
+Pad: U121 W
+Orient: R90
+Pad: U122 W
+Orient: R90
+Pad: U123 W
+Orient: R90
+Pad: U124 W
+Orient: R90
+Pad: U125 W
+Orient: R90
+Pad: U126 W
+Orient: R90
+Pad: U127 W
+Orient: R90
+Pad: U128 W
+Orient: R90
+Pad: FN10 W PADNC
+Orient: R90
+Pad: FN11 W PADNC
+Orient: R90
+Pad: FN12 W PADNC
+Orient: R90
+Pad: FN13 W PADNC
+Orient: R90
+Pad: FN14 W PADNC
+Orient: R90
+Pad: FN15 W PADNC
+Orient: R90
+Pad: FN16 W PADNC
+Orient: R90
+Pad: FN17 W PADNC
+Orient: R90
+Pad: FN18 W PADNC
+Orient: R90
+Pad: c01 SW PADFC
+
+Orient: R180
+Pad: U129 S
+Orient: R180
+Pad: U130 S
+Orient: R180
+Pad: U131 S
+Orient: R180
+Pad: U132 S
+Orient: R180
+Pad: U133 S
+Orient: R180
+Pad: U134 S
+Orient: R180
+Pad: U135 S
+Orient: R180
+Pad: U136 S
+Orient: R180
+Pad: U137 S
+Orient: R180
+Pad: U138 S
+Orient: R180
+Pad: U139 S
+Orient: R180
+Pad: U140 S
+Orient: R180
+Pad: U141 S
+Orient: R180
+Pad: U142 S
+Orient: R180
+Pad: U143 S
+Orient: R180
+Pad: U144 S
+Orient: R180
+Pad: U145 S
+Orient: R180
+Pad: U146 S
+Orient: R180
+Pad: U147 S
+Orient: R180
+Pad: U148 S
+Orient: R180
+Pad: U149 S
+Orient: R180
+Pad: U150 S
+Orient: R180
+Pad: U151 S
+Orient: R180
+Pad: U152 S
+Orient: R180
+Pad: U153 S
+Orient: R180
+Pad: U154 S
+Orient: R180
+Pad: U155 S
+Orient: R180
+Pad: U156 S
+Orient: R180
+Pad: U157 S
+Orient: R180
+Pad: U158 S
+Orient: R180
+Pad: U159 S
+Orient: R180
+Pad: U160 S
+Orient: R180
+Pad: U161 S
+Orient: R180
+Pad: U162 S
+Orient: R180
+Pad: U163 S
+Orient: R180
+Pad: U164 S
+Orient: R180
+Pad: U165 S
+Orient: R180
+Pad: U166 S
+Orient: R180
+Pad: U167 S
+Orient: R180
+Pad: U168 S
+Orient: R180
+Pad: U169 S
+Orient: R180
+Pad: U170 S
+Orient: R180
+Pad: U171 S
+Orient: R180
+Pad: U172 S
+Orient: R180
+Pad: U173 S
+Orient: R180
+Pad: U174 S
+Orient: R180
+Pad: U175 S
+Orient: R180
+Pad: U176 S
+Orient: R180
+Pad: U177 S
+Orient: R180
+Pad: U178 S
+Orient: R180
+Pad: U179 S
+Orient: R180
+Pad: U180 S
+Orient: R180
+Pad: U181 S
+Orient: R180
+Pad: U182 S
+Orient: R180
+Pad: U183 S
+Orient: R180
+Pad: U184 S
+Orient: R180
+Pad: U185 S
+Orient: R180
+Pad: U186 S
+Orient: R180
+Pad: U187 S
+Orient: R180
+Pad: U188 S
+Orient: R180
+Pad: U189 S
+Orient: R180
+Pad: U190 S
+Orient: R180
+Pad: U191 S
+Orient: R180
+Pad: U192 S
+Orient: R180
+Pad: FN19 S PADNC
+Orient: R180
+Pad: FN20 S PADNC
+Orient: R180
+Pad: FN21 S PADNC
+Orient: R180
+Pad: FN22 S PADNC
+Orient: R180
+Pad: FN23 S PADNC
+Orient: R180
+Pad: FN24 S PADNC
+Orient: R180
+Pad: FN25 S PADNC
+Orient: R180
+Pad: FN26 S PADNC
+Orient: R180
+Pad: FN27 S PADNC
+Orient: R180
+Pad: c02 SE PADFC
+
+Orient: R270
+Pad: U193 E
+Orient: R270
+Pad: U194 E
+Orient: R270
+Pad: U195 E
+Orient: R270
+Pad: U196 E
+Orient: R270
+Pad: U197 E
+Orient: R270
+Pad: U198 E
+Orient: R270
+Pad: U199 E
+Orient: R270
+Pad: U200 E
+Orient: R270
+Pad: U201 E
+Orient: R270
+Pad: U202 E
+Orient: R270
+Pad: U203 E
+Orient: R270
+Pad: U204 E
+Orient: R270
+Pad: U205 E
+Orient: R270
+Pad: U206 E
+Orient: R270
+Pad: U207 E
+Orient: R270
+Pad: U208 E
+Orient: R270
+Pad: U209 E
+Orient: R270
+Pad: U210 E
+Orient: R270
+Pad: U211 E
+Orient: R270
+Pad: U212 E
+Orient: R270
+Pad: U213 E
+Orient: R270
+Pad: U214 E
+Orient: R270
+Pad: U215 E
+Orient: R270
+Pad: U216 E
+Orient: R270
+Pad: U217 E
+Orient: R270
+Pad: U218 E
+Orient: R270
+Pad: U219 E
+Orient: R270
+Pad: U220 E
+Orient: R270
+Pad: U221 E
+Orient: R270
+Pad: U222 E
+Orient: R270
+Pad: U223 E
+Orient: R270
+Pad: U224 E
+Orient: R270
+Pad: U225 E
+Orient: R270
+Pad: U226 E
+Orient: R270
+Pad: U227 E
+Orient: R270
+Pad: U228 E
+Orient: R270
+Pad: U229 E
+Orient: R270
+Pad: U230 E
+Orient: R270
+Pad: U231 E
+Orient: R270
+Pad: U232 E
+Orient: R270
+Pad: U233 E
+Orient: R270
+Pad: U234 E
+Orient: R270
+Pad: U235 E
+Orient: R270
+Pad: U236 E
+Orient: R270
+Pad: U237 E
+Orient: R270
+Pad: U238 E
+Orient: R270
+Pad: U239 E
+Orient: R270
+Pad: U240 E
+Orient: R270
+Pad: U241 E
+Orient: R270
+Pad: U242 E
+Orient: R270
+Pad: U243 E
+Orient: R270
+Pad: U244 E
+Orient: R270
+Pad: U245 E
+Orient: R270
+Pad: U246 E
+Orient: R270
+Pad: U247 E
+Orient: R270
+Pad: U248 E
+Orient: R270
+Pad: U249 E
+Orient: R270
+Pad: U250 E
+Orient: R270
+Pad: U251 E
+Orient: R270
+Pad: U252 E
+Orient: R270
+Pad: U253 E
+Orient: R270
+Pad: U254 E
+Orient: R270
+Pad: U255 E
+Orient: R270
+Pad: U256 E
+Orient: R270
+Pad: FN28 E PADNC
+Orient: R270
+Pad: FN29 E PADNC
+Orient: R270
+Pad: FN30 E PADNC
+Orient: R270
+Pad: FN31 E PADNC
+Orient: R270
+Pad: FN32 E PADNC
+Orient: R270
+Pad: FN33 E PADNC
+Orient: R270
+Pad: FN34 E PADNC
+Orient: R270
+Pad: FN35 E PADNC
+Orient: R270
+Pad: FN36 E PADNC
+Orient: R270
+Pad: c03 NE PADFC
+
