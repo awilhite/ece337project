@@ -5,14 +5,14 @@
 // Lab Section: 4
 // Version:     1.0  Initial Design Entry
 // Description: Test bench for flexible counter
-
-// $Id: $
-// File name:   tb_counter_4bit.sv
-// Created:     9/15/2016
-// Author:      Austin Wilhite
-// Lab Section: 4
-// Version:     1.0  Initial Design Entry
-// Description: Test bench for 4-bit counter
+//
+//				Includes five test cases:
+//
+//				normal increment
+//				values on reset
+//				rollover operation
+//				clear operation
+//				toggle enable while rollover
 
 `timescale 1ns / 100ps
 

@@ -5,6 +5,13 @@
 // Lab Section: 04
 // Version:     1.0  Initial Design Entry
 // Description: Test bench for result registers
+//
+//				Includes four test cases: 
+//
+// 				write and read to address
+// 				write and read different data to same address
+// 				attempt write without write_enable
+//				clear data operation
 
 `timescale 1ns / 100ps
 

@@ -5,7 +5,16 @@
 // Lab Section: 4
 // Version:     1.0  Initial Design Entry
 // Description: Module declaration for multiplier block
-// Compile: make -f mult_makefile sim_full_source
+//
+//				Four states: idle, setup, mult, and done
+//				Includes flex_counter module
+//				
+//				Operation:	wait for begin_mult signal to be asserted
+//						  	advance to setup state to set initial addresses
+//							advance and continue in mult state for 392 cycles
+//							advance to done state to write results
+//
+// Compile: 	make -f mult_makefile sim_full_mapped
 
 module multiplier
 (

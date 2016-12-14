@@ -5,6 +5,12 @@
 // Lab Section: 04
 // Version:     1.0  Initial Design Entry
 // Description: Test bench for multiplier block
+//
+//				Includes three test cases:
+//
+//				pixels = {1, 1}, weights = {1, 1}
+//				pixels = {5, 2}, weights = {7, 9}
+//				overflow condition
 
 `timescale 1ns / 100ps
 
@@ -140,7 +146,7 @@ module tb_multiplier();
 		delay_cycles(10);
 
 		// Test Case 2: 
-		// Expected Result 392
+		// Expected Result 20776
 		// One of weight values set to zero
 
 		tb_pixel_value_1 = 8'd05;
@@ -150,7 +156,7 @@ module tb_multiplier();
 
 		tb_row_select = 1;
 
-		tb_expected_val = 16'd392;
+		tb_expected_val = 16'd20776;
 
 		reset_dut();
 		assert_begin();
